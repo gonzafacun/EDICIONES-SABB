@@ -1,0 +1,33 @@
+# Dependencias
+node_modules/
+frontend/node_modules/
+functions/node_modules/
+
+# Variables de entorno — NUNCA commitear
+.env
+.env.local
+.env.production
+frontend/.env.local
+functions/.env
+
+# Next.js build
+frontend/.next/
+frontend/out/
+
+# Firebase
+.firebase/
+firebase-debug.log
+firestore-debug.log
+ui-debug.log
+
+# Sistema operativo
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/settings.json
+.idea/
+
+# Logs
+*.log
+npm-debug.log*
