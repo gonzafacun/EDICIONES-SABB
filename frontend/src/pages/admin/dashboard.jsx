@@ -1,17 +1,9 @@
 // src/pages/admin/dashboard.jsx
 import { useState, useEffect } from "react";
 import { withAdminLayout } from "../../components/AdminLayout";
+import { useFetch } from "../../hooks/useFetch";
+import { getProductos, crearProducto, actualizarProducto, eliminarProducto } from "../../services/productos";
 import styles from "./dashboard.module.css";
-
-// ─── Datos de ejemplo (se reemplazarán con Firestore) ────
-const PRODUCTOS_INIT = [
-  { id: "1", nombre: "Notebook Lenovo IdeaPad 15",      precio: 850000,  precioOriginal: 1050000, categoria: "Notebooks",      stock: 5,  destacado: true,  imagen: null },
-  { id: "2", nombre: 'Monitor Samsung 27" Full HD',     precio: 420000,  precioOriginal: null,    categoria: "Monitores",      stock: 3,  destacado: true,  imagen: null },
-  { id: "3", nombre: "Teclado Mecánico Redragon K552",  precio: 95000,   precioOriginal: 120000,  categoria: "Periféricos",    stock: 10, destacado: true,  imagen: null },
-  { id: "4", nombre: "Mouse Logitech G305 Inalámbrico", precio: 78000,   precioOriginal: null,    categoria: "Periféricos",    stock: 0,  destacado: false, imagen: null },
-  { id: "5", nombre: "Auriculares HyperX Cloud II",     precio: 185000,  precioOriginal: 210000,  categoria: "Audio",          stock: 7,  destacado: true,  imagen: null },
-  { id: "6", nombre: "SSD Kingston 1TB NVMe M.2",       precio: 130000,  precioOriginal: null,    categoria: "Almacenamiento", stock: 12, destacado: false, imagen: null },
-];
 
 const CATEGORIAS = ["Notebooks","Monitores","Periféricos","Audio","Almacenamiento","Smartphones","Tablets","Redes"];
 
