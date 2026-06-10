@@ -1,11 +1,9 @@
-// src/pages/index.jsx
 import { useState } from "react";
 import Link from "next/link";
 import { withLayout } from "../components/Layout";
 import ProductCard from "../components/ProductCard";
 import styles from "./index.module.css";
 
-// ─── Datos de ejemplo (se reemplazarán con Firestore) ────
 const PRODUCTOS_DESTACADOS = [
   {
     id: "1",
@@ -19,7 +17,7 @@ const PRODUCTOS_DESTACADOS = [
   },
   {
     id: "2",
-    nombre: "Monitor Samsung 27\" Full HD",
+    nombre: 'Monitor Samsung 27" Full HD',
     precio: 420000,
     precioOriginal: null,
     categoria: "Monitores",
@@ -37,85 +35,53 @@ const PRODUCTOS_DESTACADOS = [
     stock: 10,
     imagen: null,
   },
-  {
-    id: "4",
-    nombre: "Mouse Logitech G305 Inalámbrico",
-    precio: 78000,
-    precioOriginal: null,
-    categoria: "Periféricos",
-    destacado: true,
-    stock: 0,
-    imagen: null,
-  },
-  {
-    id: "5",
-    nombre: "Auriculares HyperX Cloud II",
-    precio: 185000,
-    precioOriginal: 210000,
-    categoria: "Audio",
-    destacado: true,
-    stock: 7,
-    imagen: null,
-  },
-  {
-    id: "6",
-    nombre: "SSD Kingston 1TB NVMe M.2",
-    precio: 130000,
-    precioOriginal: null,
-    categoria: "Almacenamiento",
-    destacado: true,
-    stock: 12,
-    imagen: null,
-  },
 ];
 
 const CATEGORIAS = [
-  { label: "Notebooks",      icon: "💻" },
-  { label: "Monitores",      icon: "🖥️" },
-  { label: "Periféricos",    icon: "🖱️" },
-  { label: "Audio",          icon: "🎧" },
-  { label: "Almacenamiento", icon: "💾" },
-  { label: "Smartphones",    icon: "📱" },
+  { label: "Catálogo", icon: "01" },
+  { label: "Destacados", icon: "02" },
+  { label: "Ofertas", icon: "03" },
+  { label: "Novedades", icon: "04" },
 ];
 
-// ─── Sección Hero ─────────────────────────────────────────
 function Hero() {
   return (
     <section className={styles.hero}>
-      {/* Fondo con gradiente animado */}
-      <div className={styles.heroBg} aria-hidden="true">
-        <div className={styles.heroBlob1} />
-        <div className={styles.heroBlob2} />
-        <div className={styles.heroGrid} />
-      </div>
+      <div className={styles.heroBg} aria-hidden="true" />
 
       <div className={`container ${styles.heroContent}`}>
         <div className={styles.heroText}>
-          <span className={styles.heroBadge}>⚡ Nueva temporada</span>
+          <span className={styles.heroBadge}>Catálogo oficial</span>
           <h1 className={styles.heroTitle}>
-            Tecnología que
-            <span className={styles.heroAccent}> te mueve</span>
+            Ediciones Sab
+            <span className={styles.heroAccent}> selección y confianza</span>
           </h1>
           <p className={styles.heroSubtitle}>
-            Los mejores precios en electrónica, con envío a todo el país
-            y garantía oficial en todos los productos.
+            Una tienda clara, cercana y cuidada para explorar productos,
+            consultar disponibilidad y avanzar con tu compra de forma simple.
           </p>
           <div className={styles.heroActions}>
             <Link href="/productos" className="btn btn-primary">
-              Ver productos
+              Ver catálogo
             </Link>
-            <Link href="/productos?oferta=true" className="btn btn-secondary">
-              Ofertas del día
+            <Link href="/checkout" className="btn btn-secondary">
+              Ir al carrito
             </Link>
           </div>
         </div>
 
-        {/* Stats */}
+        <div className={styles.heroLogoPanel} aria-label="Logo de Ediciones Sab">
+          <div className={styles.logoRing}>
+            <img src="/logo-ediciones-sab.jpg" alt="Ediciones Sab" />
+          </div>
+          <p>Atención personalizada y catálogo actualizado.</p>
+        </div>
+
         <div className={styles.heroStats}>
           {[
-            { value: "+500",  label: "Productos" },
-            { value: "24hs",  label: "Envío express" },
-            { value: "12x",   label: "Sin interés" },
+            { value: "Online", label: "Catálogo disponible" },
+            { value: "24hs", label: "Respuesta estimada" },
+            { value: "Seguro", label: "Compra acompañada" },
           ].map(({ value, label }) => (
             <div key={label} className={styles.statItem}>
               <span className={styles.statValue}>{value}</span>
@@ -128,17 +94,16 @@ function Hero() {
   );
 }
 
-// ─── Sección Categorías ───────────────────────────────────
 function Categorias() {
   return (
     <section className={styles.section}>
       <div className="container">
-        <h2 className={styles.sectionTitle}>Explorá por categoría</h2>
+        <h2 className={styles.sectionTitle}>Explorá la tienda</h2>
         <div className={styles.categoriasGrid}>
           {CATEGORIAS.map(({ label, icon }) => (
             <Link
               key={label}
-              href={`/productos?categoria=${encodeURIComponent(label)}`}
+              href="/productos"
               className={styles.categoriaCard}
             >
               <span className={styles.categoriaIcon}>{icon}</span>
@@ -151,7 +116,6 @@ function Categorias() {
   );
 }
 
-// ─── Sección Productos Destacados ────────────────────────
 function ProductosDestacados({ onAddToCart }) {
   return (
     <section className={styles.section}>
@@ -159,7 +123,7 @@ function ProductosDestacados({ onAddToCart }) {
         <div className={styles.sectionHeader}>
           <h2 className={styles.sectionTitle}>Productos destacados</h2>
           <Link href="/productos" className={styles.verTodos}>
-            Ver todos →
+            Ver todos
           </Link>
         </div>
         <div className={styles.productosGrid}>
@@ -176,18 +140,17 @@ function ProductosDestacados({ onAddToCart }) {
   );
 }
 
-// ─── Banner promo ─────────────────────────────────────────
 function BannerPromo() {
   return (
     <section className={styles.bannerPromo}>
       <div className="container">
         <div className={styles.bannerInner}>
           <div className={styles.bannerText}>
-            <h2 className={styles.bannerTitle}>Hasta 12 cuotas sin interés</h2>
-            <p>Pagá con todas las tarjetas a través de E-pagos.</p>
+            <h2 className={styles.bannerTitle}>Consultá disponibilidad y entrega</h2>
+            <p>Coordiná tu pedido con atención personalizada desde el catálogo.</p>
           </div>
           <Link href="/productos" className="btn btn-primary">
-            Aprovechar oferta
+            Empezar consulta
           </Link>
         </div>
       </div>
@@ -195,13 +158,11 @@ function BannerPromo() {
   );
 }
 
-// ─── Página principal ─────────────────────────────────────
 export default function HomePage() {
   const [cartCount, setCartCount] = useState(0);
 
-  const handleAddToCart = (product) => {
+  const handleAddToCart = () => {
     setCartCount((prev) => prev + 1);
-    // TODO: integrar con contexto global del carrito
   };
 
   return (
@@ -216,5 +177,5 @@ export default function HomePage() {
 
 HomePage.getLayout = withLayout({
   title: "Inicio",
-  description: "TechStore — Electrónica y tecnología al mejor precio",
+  description: "Ediciones Sab - catálogo online con atención personalizada",
 });

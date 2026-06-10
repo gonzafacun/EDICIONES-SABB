@@ -1,80 +1,62 @@
-/* ═══════════════════════════════════════════════════
-   globals.css — Sistema de diseño
-   E-commerce de electrónica / tecnología
-   ═══════════════════════════════════════════════════ */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Libre+Baskerville:wght@400;700&display=swap');
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;700&display=swap');
-
-/* ─────────────────────────────────────────
-   TOKENS DE DISEÑO
-   ───────────────────────────────────────── */
 :root {
-  /* Paleta principal */
-  --color-bg:          #0D0F14;   /* Fondo principal oscuro */
-  --color-surface:     #161B25;   /* Cards, panels */
-  --color-surface-2:   #1E2535;   /* Hover states, inputs */
-  --color-border:      #2A3347;   /* Bordes sutiles */
-  --color-accent:      #3B82F6;   /* Azul eléctrico — CTA principal */
-  --color-accent-hover:#2563EB;
-  --color-accent-glow: rgba(59,130,246,0.15);
-  --color-success:     #10B981;   /* Confirmaciones */
-  --color-warning:     #F59E0B;   /* Alertas */
-  --color-danger:      #EF4444;   /* Errores */
+  --color-bg: #f7f9fc;
+  --color-surface: #ffffff;
+  --color-surface-2: #eef3f9;
+  --color-border: #d8e1ed;
+  --color-accent: #0b3b78;
+  --color-accent-hover: #062d60;
+  --color-accent-glow: rgba(11, 59, 120, 0.12);
+  --color-gold: #b8913a;
+  --color-gold-soft: #f5ecd8;
+  --color-success: #217a55;
+  --color-warning: #b66c00;
+  --color-danger: #b3261e;
 
-  /* Tipografía */
-  --color-text-primary:   #F0F4FF;
-  --color-text-secondary: #8B9CC8;
-  --color-text-muted:     #4A5568;
+  --color-text-primary: #11233b;
+  --color-text-secondary: #4d6077;
+  --color-text-muted: #78889b;
 
-  /* Fuentes */
-  --font-display: 'Space Grotesk', sans-serif;  /* Títulos, precios */
-  --font-body:    'Inter', sans-serif;           /* Cuerpo, UI */
+  --font-display: 'Libre Baskerville', Georgia, serif;
+  --font-body: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 
-  /* Escala tipográfica */
-  --text-xs:   0.75rem;
-  --text-sm:   0.875rem;
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
   --text-base: 1rem;
-  --text-lg:   1.125rem;
-  --text-xl:   1.25rem;
-  --text-2xl:  1.5rem;
-  --text-3xl:  1.875rem;
-  --text-4xl:  2.25rem;
+  --text-lg: 1.125rem;
+  --text-xl: 1.25rem;
+  --text-2xl: 1.5rem;
+  --text-3xl: 1.875rem;
+  --text-4xl: 2.25rem;
 
-  /* Espaciado */
-  --space-1:  0.25rem;
-  --space-2:  0.5rem;
-  --space-3:  0.75rem;
-  --space-4:  1rem;
-  --space-6:  1.5rem;
-  --space-8:  2rem;
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
   --space-12: 3rem;
   --space-16: 4rem;
   --space-24: 6rem;
 
-  /* Bordes */
   --radius-sm: 6px;
-  --radius-md: 10px;
-  --radius-lg: 16px;
-  --radius-xl: 24px;
+  --radius-md: 8px;
+  --radius-lg: 8px;
+  --radius-xl: 8px;
 
-  /* Sombras */
-  --shadow-card:  0 1px 3px rgba(0,0,0,0.4), 0 0 0 1px var(--color-border);
+  --shadow-card: 0 18px 45px rgba(17, 35, 59, 0.08);
   --shadow-focus: 0 0 0 3px var(--color-accent-glow);
-  --shadow-glow:  0 4px 24px rgba(59,130,246,0.2);
+  --shadow-glow: 0 16px 32px rgba(11, 59, 120, 0.16);
 
-  /* Transiciones */
-  --transition-fast:   150ms ease;
+  --transition-fast: 150ms ease;
   --transition-normal: 250ms ease;
-  --transition-slow:   400ms ease;
+  --transition-slow: 400ms ease;
 
-  /* Layout */
-  --max-width:    1280px;
-  --navbar-height: 64px;
+  --max-width: 1180px;
+  --navbar-height: 78px;
 }
 
-/* ─────────────────────────────────────────
-   RESET & BASE
-   ───────────────────────────────────────── */
 *, *::before, *::after {
   box-sizing: border-box;
   margin: 0;
@@ -87,7 +69,9 @@ html {
 }
 
 body {
-  background-color: var(--color-bg);
+  background:
+    linear-gradient(180deg, rgba(245, 236, 216, 0.42) 0%, rgba(247, 249, 252, 0) 340px),
+    var(--color-bg);
   color: var(--color-text-primary);
   font-family: var(--font-body);
   font-size: var(--text-base);
@@ -96,9 +80,6 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* ─────────────────────────────────────────
-   TIPOGRAFÍA
-   ───────────────────────────────────────── */
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-display);
   font-weight: 700;
@@ -109,7 +90,7 @@ h1, h2, h3, h4, h5, h6 {
 h1 { font-size: var(--text-4xl); }
 h2 { font-size: var(--text-3xl); }
 h3 { font-size: var(--text-2xl); }
-h4 { font-size: var(--text-xl);  }
+h4 { font-size: var(--text-xl); }
 
 p {
   color: var(--color-text-secondary);
@@ -121,16 +102,16 @@ a {
   text-decoration: none;
   transition: color var(--transition-fast);
 }
-a:hover { color: var(--color-accent-hover); }
+
+a:hover {
+  color: var(--color-accent-hover);
+}
 
 img {
   max-width: 100%;
   display: block;
 }
 
-/* ─────────────────────────────────────────
-   UTILIDADES GLOBALES
-   ───────────────────────────────────────── */
 .container {
   width: 100%;
   max-width: var(--max-width);
@@ -143,15 +124,15 @@ img {
   align-items: center;
   justify-content: center;
   gap: var(--space-2);
-  padding: var(--space-3) var(--space-6);
+  padding: 0.85rem 1.25rem;
   border-radius: var(--radius-md);
   font-family: var(--font-body);
   font-size: var(--text-sm);
-  font-weight: 600;
-  letter-spacing: 0.01em;
+  font-weight: 800;
+  letter-spacing: 0;
   border: none;
   cursor: pointer;
-  transition: all var(--transition-fast);
+  transition: transform var(--transition-fast), background var(--transition-fast), box-shadow var(--transition-fast);
   text-decoration: none;
 }
 
@@ -159,44 +140,46 @@ img {
   background: var(--color-accent);
   color: #fff;
 }
+
 .btn-primary:hover {
   background: var(--color-accent-hover);
   box-shadow: var(--shadow-glow);
   color: #fff;
+  transform: translateY(-1px);
 }
 
 .btn-secondary {
-  background: var(--color-surface-2);
-  color: var(--color-text-primary);
+  background: var(--color-surface);
+  color: var(--color-accent);
   border: 1px solid var(--color-border);
 }
+
 .btn-secondary:hover {
-  background: var(--color-border);
-  color: var(--color-text-primary);
+  background: var(--color-gold-soft);
+  color: var(--color-accent-hover);
+  border-color: rgba(184, 145, 58, 0.45);
 }
 
 .btn-ghost {
   background: transparent;
   color: var(--color-text-secondary);
 }
+
 .btn-ghost:hover {
   background: var(--color-surface-2);
   color: var(--color-text-primary);
 }
 
-/* Focus visible accesible */
 :focus-visible {
   outline: none;
   box-shadow: var(--shadow-focus);
 }
 
-/* Scrollbar personalizada */
-::-webkit-scrollbar       { width: 6px; }
+::-webkit-scrollbar { width: 8px; }
 ::-webkit-scrollbar-track { background: var(--color-bg); }
-::-webkit-scrollbar-thumb { background: var(--color-border); border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: var(--color-text-muted); }
+::-webkit-scrollbar-thumb { background: #c0ccdc; border-radius: 99px; }
+::-webkit-scrollbar-thumb:hover { background: #9aabc0; }
 
-/* Reducción de movimiento */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;
@@ -204,24 +187,6 @@ img {
   }
 }
 
-/* ─────────────────────────────────────────
-   LAYOUT BASE
-   ───────────────────────────────────────── */
-.page-wrapper {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-}
-
-.page-content {
-  flex: 1;
-  padding-top: var(--navbar-height);
-}
-
-/* ─────────────────────────────────────────
-   RESPONSIVE BREAKPOINTS (referencia)
-   sm: 640px / md: 768px / lg: 1024px / xl: 1280px
-   ───────────────────────────────────────── */
 @media (max-width: 640px) {
   .container { padding: 0 var(--space-4); }
   h1 { font-size: var(--text-3xl); }

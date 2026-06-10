@@ -1,4 +1,3 @@
-// src/components/Navbar.jsx
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -26,28 +25,47 @@ function HamburgerIcon({ open }) {
   return (
     <svg
       className={`${styles.hamburgerIcon} ${open ? styles.open : ""}`}
-      width="24" height="24" viewBox="0 0 24 24"
-      fill="none" stroke="currentColor" strokeWidth="1.8"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
       strokeLinecap="round"
     >
-      <line className={styles.lineTop}    x1="3" y1="6"  x2="21" y2="6"  />
-      <line className={styles.lineMid}    x1="3" y1="12" x2="21" y2="12" />
+      <line className={styles.lineTop} x1="3" y1="6" x2="21" y2="6" />
+      <line className={styles.lineMid} x1="3" y1="12" x2="21" y2="12" />
       <line className={styles.lineBottom} x1="3" y1="18" x2="21" y2="18" />
     </svg>
   );
 }
 
 const NAV_LINKS = [
-  { href: "/",          label: "Inicio"    },
+  { href: "/", label: "Inicio" },
   { href: "/productos", label: "Productos" },
 ];
 
+function BrandMark({ compact = false }) {
+  return (
+    <span className={compact ? styles.logoMobileBrand : styles.logo}>
+      <img
+        className={styles.logoImage}
+        src="/logo-ediciones-sab.jpg"
+        alt=""
+        width={compact ? "44" : "52"}
+        height={compact ? "44" : "52"}
+      />
+      <span className={styles.logoText}>Ediciones Sab</span>
+    </span>
+  );
+}
+
 export default function Navbar() {
-  const { totalItems }               = useCart();
-  const [menuOpen, setMenuOpen]      = useState(false);
-  const [scrolled, setScrolled]      = useState(false);
-  const router                       = useRouter();
-  const menuRef                      = useRef(null);
+  const { totalItems } = useCart();
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  const router = useRouter();
+  const menuRef = useRef(null);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 8);
@@ -55,7 +73,9 @@ export default function Navbar() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  useEffect(() => { setMenuOpen(false); }, [router.pathname]);
+  useEffect(() => {
+    setMenuOpen(false);
+  }, [router.pathname]);
 
   useEffect(() => {
     if (!menuOpen) return;
@@ -68,16 +88,17 @@ export default function Navbar() {
 
   useEffect(() => {
     document.body.style.overflow = menuOpen ? "hidden" : "";
-    return () => { document.body.style.overflow = ""; };
+    return () => {
+      document.body.style.overflow = "";
+    };
   }, [menuOpen]);
 
   return (
     <>
       <header className={`${styles.navbar} ${scrolled ? styles.scrolled : ""}`} role="banner">
         <div className={`container ${styles.inner}`}>
-          <Link href="/" className={styles.logo} aria-label="Ir al inicio">
-            <span className={styles.logoIcon}>⚡</span>
-            <span className={styles.logoText}>TechStore</span>
+          <Link href="/" className={styles.logoLink} aria-label="Ir al inicio">
+            <BrandMark />
           </Link>
 
           <nav className={styles.navDesktop} aria-label="Navegación principal">
@@ -121,8 +142,10 @@ export default function Navbar() {
         aria-hidden={!menuOpen}
       >
         <div className={styles.mobileMenuHeader}>
-          <span className={styles.logoText}>TechStore</span>
-          <button className={styles.closeBtn} onClick={() => setMenuOpen(false)} aria-label="Cerrar menú">✕</button>
+          <BrandMark compact />
+          <button className={styles.closeBtn} onClick={() => setMenuOpen(false)} aria-label="Cerrar menú">
+            x
+          </button>
         </div>
 
         <ul className={styles.mobileNavList} role="list">

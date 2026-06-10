@@ -1,8 +1,3 @@
-/* ═══════════════════════════════════════════════════
-   Navbar.module.css
-   ═══════════════════════════════════════════════════ */
-
-/* ─── Barra principal ─────────────────────────────── */
 .navbar {
   position: fixed;
   top: 0;
@@ -10,17 +5,15 @@
   right: 0;
   z-index: 100;
   height: var(--navbar-height);
-  background: rgba(13, 15, 20, 0.8);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border-bottom: 1px solid transparent;
-  transition: border-color var(--transition-normal),
-              box-shadow var(--transition-normal);
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-bottom: 1px solid rgba(216, 225, 237, 0.85);
+  transition: box-shadow var(--transition-normal);
 }
 
 .navbar.scrolled {
-  border-bottom-color: var(--color-border);
-  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 12px 32px rgba(17, 35, 59, 0.08);
 }
 
 .inner {
@@ -31,57 +24,68 @@
   gap: var(--space-4);
 }
 
-/* ─── Logo ────────────────────────────────────────── */
-.logo {
-  display: flex;
-  align-items: center;
-  gap: var(--space-2);
+.logoLink {
+  color: inherit;
   text-decoration: none;
   flex-shrink: 0;
 }
 
-.logoIcon {
-  font-size: 1.25rem;
-  line-height: 1;
+.logo,
+.logoMobileBrand {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.logoImage {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  object-fit: cover;
+  background: #fff;
+  border: 2px solid rgba(11, 59, 120, 0.16);
+  box-shadow: 0 8px 18px rgba(11, 59, 120, 0.12);
 }
 
 .logoText {
   font-family: var(--font-display);
   font-size: var(--text-lg);
   font-weight: 700;
-  color: var(--color-text-primary);
-  letter-spacing: -0.02em;
+  color: var(--color-accent);
+  letter-spacing: 0;
+  white-space: nowrap;
 }
 
-/* ─── Nav desktop ─────────────────────────────────── */
 .navDesktop {
   display: flex;
   align-items: center;
   gap: var(--space-1);
+  padding: var(--space-1);
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
 }
 
 .navLink {
-  padding: var(--space-2) var(--space-3);
-  border-radius: var(--radius-sm);
+  padding: var(--space-2) var(--space-4);
+  border-radius: 999px;
   font-size: var(--text-sm);
-  font-weight: 500;
+  font-weight: 800;
   color: var(--color-text-secondary);
   text-decoration: none;
-  transition: color var(--transition-fast),
-              background var(--transition-fast);
+  transition: color var(--transition-fast), background var(--transition-fast);
 }
 
 .navLink:hover {
-  color: var(--color-text-primary);
-  background: var(--color-surface-2);
+  color: var(--color-accent);
+  background: #fff;
 }
 
 .navLink.active {
-  color: var(--color-accent);
-  background: var(--color-accent-glow);
+  color: #fff;
+  background: var(--color-accent);
 }
 
-/* ─── Acciones (carrito + hamburguesa) ────────────── */
 .actions {
   display: flex;
   align-items: center;
@@ -89,88 +93,79 @@
   flex-shrink: 0;
 }
 
-/* ─── Botón carrito ───────────────────────────────── */
-.cartBtn {
-  position: relative;
+.cartBtn,
+.hamburgerBtn,
+.closeBtn {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 40px;
-  height: 40px;
-  border-radius: var(--radius-sm);
-  color: var(--color-text-secondary);
+  width: 42px;
+  height: 42px;
+  border-radius: 999px;
+  color: var(--color-accent);
+  background: #fff;
+  border: 1px solid var(--color-border);
+  cursor: pointer;
   text-decoration: none;
-  transition: color var(--transition-fast),
-              background var(--transition-fast);
+  transition: background var(--transition-fast), box-shadow var(--transition-fast), transform var(--transition-fast);
 }
 
-.cartBtn:hover {
-  color: var(--color-text-primary);
-  background: var(--color-surface-2);
+.cartBtn {
+  position: relative;
+}
+
+.cartBtn:hover,
+.hamburgerBtn:hover,
+.closeBtn:hover {
+  background: var(--color-gold-soft);
+  box-shadow: var(--shadow-card);
+  transform: translateY(-1px);
 }
 
 .cartBadge {
   position: absolute;
-  top: 4px;
-  right: 4px;
-  min-width: 16px;
-  height: 16px;
-  padding: 0 4px;
+  top: 1px;
+  right: 1px;
+  min-width: 17px;
+  height: 17px;
+  padding: 0 5px;
   border-radius: 99px;
-  background: var(--color-accent);
+  background: var(--color-gold);
   color: #fff;
   font-size: 10px;
-  font-weight: 700;
-  line-height: 16px;
+  font-weight: 800;
+  line-height: 17px;
   text-align: center;
 }
 
-/* ─── Botón hamburguesa ───────────────────────────── */
 .hamburgerBtn {
   display: none;
-  align-items: center;
-  justify-content: center;
-  width: 40px;
-  height: 40px;
-  border: none;
-  background: transparent;
-  border-radius: var(--radius-sm);
-  color: var(--color-text-secondary);
-  cursor: pointer;
-  transition: color var(--transition-fast),
-              background var(--transition-fast);
 }
 
-.hamburgerBtn:hover {
-  color: var(--color-text-primary);
-  background: var(--color-surface-2);
-}
-
-/* Animación hamburguesa → X */
 .hamburgerIcon line {
-  transition: transform var(--transition-normal),
-              opacity var(--transition-fast);
+  transition: transform var(--transition-normal), opacity var(--transition-fast);
   transform-origin: center;
 }
 
 .hamburgerIcon.open .lineTop {
   transform: translateY(6px) rotate(45deg);
 }
+
 .hamburgerIcon.open .lineMid {
   opacity: 0;
   transform: scaleX(0);
 }
+
 .hamburgerIcon.open .lineBottom {
   transform: translateY(-6px) rotate(-45deg);
 }
 
-/* ─── Overlay ─────────────────────────────────────── */
 .overlay {
   display: none;
   position: fixed;
   inset: 0;
   z-index: 110;
-  background: rgba(0, 0, 0, 0.6);
+  background: rgba(17, 35, 59, 0.42);
   opacity: 0;
   transition: opacity var(--transition-normal);
 }
@@ -179,15 +174,14 @@
   opacity: 1;
 }
 
-/* ─── Menú mobile (drawer) ────────────────────────── */
 .mobileMenu {
   position: fixed;
   top: 0;
   right: 0;
   bottom: 0;
   z-index: 120;
-  width: min(320px, 85vw);
-  background: var(--color-surface);
+  width: min(340px, 88vw);
+  background: #fff;
   border-left: 1px solid var(--color-border);
   display: flex;
   flex-direction: column;
@@ -195,6 +189,7 @@
   transition: transform var(--transition-normal);
   padding: var(--space-6);
   gap: var(--space-6);
+  box-shadow: -22px 0 46px rgba(17, 35, 59, 0.16);
 }
 
 .mobileMenuOpen {
@@ -205,31 +200,19 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: var(--space-4);
 }
 
-.closeBtn {
-  width: 36px;
-  height: 36px;
-  border: none;
-  background: var(--color-surface-2);
-  border-radius: var(--radius-sm);
-  color: var(--color-text-secondary);
-  font-size: var(--text-base);
-  cursor: pointer;
-  transition: color var(--transition-fast),
-              background var(--transition-fast);
-}
-
-.closeBtn:hover {
-  color: var(--color-text-primary);
-  background: var(--color-border);
+.logoMobileBrand .logoImage {
+  width: 44px;
+  height: 44px;
 }
 
 .mobileNavList {
   list-style: none;
   display: flex;
   flex-direction: column;
-  gap: var(--space-1);
+  gap: var(--space-2);
   flex: 1;
 }
 
@@ -238,21 +221,17 @@
   padding: var(--space-3) var(--space-4);
   border-radius: var(--radius-md);
   font-size: var(--text-base);
-  font-weight: 500;
+  font-weight: 800;
   color: var(--color-text-secondary);
-  text-decoration: none;
-  transition: color var(--transition-fast),
-              background var(--transition-fast);
-}
-
-.mobileNavLink:hover {
-  color: var(--color-text-primary);
   background: var(--color-surface-2);
+  text-decoration: none;
+  transition: color var(--transition-fast), background var(--transition-fast);
 }
 
+.mobileNavLink:hover,
 .mobileNavLink.active {
-  color: var(--color-accent);
-  background: var(--color-accent-glow);
+  color: #fff;
+  background: var(--color-accent);
 }
 
 .mobileMenuFooter {
@@ -260,9 +239,19 @@
   border-top: 1px solid var(--color-border);
 }
 
-/* ─── Responsive ──────────────────────────────────── */
 @media (max-width: 768px) {
-  .navDesktop    { display: none; }
-  .hamburgerBtn  { display: flex; }
-  .overlay       { display: block; }
+  .navDesktop { display: none; }
+  .hamburgerBtn { display: flex; }
+  .overlay { display: block; }
+}
+
+@media (max-width: 420px) {
+  .logoText {
+    font-size: var(--text-base);
+  }
+
+  .logoImage {
+    width: 46px;
+    height: 46px;
+  }
 }
