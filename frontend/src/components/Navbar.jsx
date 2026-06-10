@@ -2,9 +2,9 @@
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { useRouter } from "next/router";
+import { useCart } from "../context/CartContext";
 import styles from "./Navbar.module.css";
 
-// ─── Ícono carrito ───────────────────────────────────────
 function CartIcon({ count = 0 }) {
   return (
     <Link href="/checkout" className={styles.cartBtn} aria-label={`Carrito, ${count} productos`}>
@@ -22,7 +22,6 @@ function CartIcon({ count = 0 }) {
   );
 }
 
-// ─── Ícono hamburguesa / X ───────────────────────────────
 function HamburgerIcon({ open }) {
   return (
     <svg
@@ -31,54 +30,42 @@ function HamburgerIcon({ open }) {
       fill="none" stroke="currentColor" strokeWidth="1.8"
       strokeLinecap="round"
     >
-      {/* Línea superior */}
       <line className={styles.lineTop}    x1="3" y1="6"  x2="21" y2="6"  />
-      {/* Línea del medio */}
       <line className={styles.lineMid}    x1="3" y1="12" x2="21" y2="12" />
-      {/* Línea inferior */}
       <line className={styles.lineBottom} x1="3" y1="18" x2="21" y2="18" />
     </svg>
   );
 }
 
-// ─── Links de navegación ─────────────────────────────────
 const NAV_LINKS = [
   { href: "/",          label: "Inicio"    },
   { href: "/productos", label: "Productos" },
 ];
 
-// ─── Componente principal ────────────────────────────────
-export default function Navbar({ cartCount = 0 }) {
-  const [menuOpen, setMenuOpen]     = useState(false);
-  const [scrolled, setScrolled]     = useState(false);
+export default function Navbar() {
+  const { totalItems }               = useCart();
+  const [menuOpen, setMenuOpen]      = useState(false);
+  const [scrolled, setScrolled]      = useState(false);
   const router                       = useRouter();
   const menuRef                      = useRef(null);
 
-  // Sombra al hacer scroll
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 8);
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  // Cerrar menú al cambiar de ruta
-  useEffect(() => {
-    setMenuOpen(false);
-  }, [router.pathname]);
+  useEffect(() => { setMenuOpen(false); }, [router.pathname]);
 
-  // Cerrar menú al hacer click fuera
   useEffect(() => {
     if (!menuOpen) return;
     const handler = (e) => {
-      if (menuRef.current && !menuRef.current.contains(e.target)) {
-        setMenuOpen(false);
-      }
+      if (menuRef.current && !menuRef.current.contains(e.target)) setMenuOpen(false);
     };
     document.addEventListener("mousedown", handler);
     return () => document.removeEventListener("mousedown", handler);
   }, [menuOpen]);
 
-  // Bloquear scroll del body cuando el menú está abierto
   useEffect(() => {
     document.body.style.overflow = menuOpen ? "hidden" : "";
     return () => { document.body.style.overflow = ""; };
@@ -86,19 +73,13 @@ export default function Navbar({ cartCount = 0 }) {
 
   return (
     <>
-      <header
-        className={`${styles.navbar} ${scrolled ? styles.scrolled : ""}`}
-        role="banner"
-      >
+      <header className={`${styles.navbar} ${scrolled ? styles.scrolled : ""}`} role="banner">
         <div className={`container ${styles.inner}`}>
-
-          {/* Logo */}
           <Link href="/" className={styles.logo} aria-label="Ir al inicio">
             <span className={styles.logoIcon}>⚡</span>
             <span className={styles.logoText}>TechStore</span>
           </Link>
 
-          {/* Nav desktop */}
           <nav className={styles.navDesktop} aria-label="Navegación principal">
             {NAV_LINKS.map(({ href, label }) => (
               <Link
@@ -111,11 +92,8 @@ export default function Navbar({ cartCount = 0 }) {
             ))}
           </nav>
 
-          {/* Acciones derecha */}
           <div className={styles.actions}>
-            <CartIcon count={cartCount} />
-
-            {/* Botón hamburguesa — solo mobile */}
+            <CartIcon count={totalItems} />
             <button
               className={styles.hamburgerBtn}
               onClick={() => setMenuOpen((prev) => !prev)}
@@ -126,18 +104,15 @@ export default function Navbar({ cartCount = 0 }) {
               <HamburgerIcon open={menuOpen} />
             </button>
           </div>
-
         </div>
       </header>
 
-      {/* Overlay oscuro */}
       <div
         className={`${styles.overlay} ${menuOpen ? styles.overlayVisible : ""}`}
         aria-hidden="true"
         onClick={() => setMenuOpen(false)}
       />
 
-      {/* Menú mobile (drawer lateral) */}
       <nav
         id="mobile-menu"
         ref={menuRef}
@@ -147,13 +122,7 @@ export default function Navbar({ cartCount = 0 }) {
       >
         <div className={styles.mobileMenuHeader}>
           <span className={styles.logoText}>TechStore</span>
-          <button
-            className={styles.closeBtn}
-            onClick={() => setMenuOpen(false)}
-            aria-label="Cerrar menú"
-          >
-            ✕
-          </button>
+          <button className={styles.closeBtn} onClick={() => setMenuOpen(false)} aria-label="Cerrar menú">✕</button>
         </div>
 
         <ul className={styles.mobileNavList} role="list">
@@ -171,7 +140,7 @@ export default function Navbar({ cartCount = 0 }) {
 
         <div className={styles.mobileMenuFooter}>
           <Link href="/checkout" className="btn btn-primary" style={{ width: "100%", justifyContent: "center" }}>
-            Ver carrito {cartCount > 0 && `(${cartCount})`}
+            Ver carrito {totalItems > 0 && `(${totalItems})`}
           </Link>
         </div>
       </nav>
