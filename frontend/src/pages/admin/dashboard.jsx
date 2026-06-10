@@ -1,0 +1,353 @@
+// src/pages/admin/dashboard.jsx
+import { useState, useEffect } from "react";
+import { withAdminLayout } from "../../components/AdminLayout";
+import styles from "./dashboard.module.css";
+
+// ─── Datos de ejemplo (se reemplazarán con Firestore) ────
+const PRODUCTOS_INIT = [
+  { id: "1", nombre: "Notebook Lenovo IdeaPad 15",      precio: 850000,  precioOriginal: 1050000, categoria: "Notebooks",      stock: 5,  destacado: true,  imagen: null },
+  { id: "2", nombre: 'Monitor Samsung 27" Full HD',     precio: 420000,  precioOriginal: null,    categoria: "Monitores",      stock: 3,  destacado: true,  imagen: null },
+  { id: "3", nombre: "Teclado Mecánico Redragon K552",  precio: 95000,   precioOriginal: 120000,  categoria: "Periféricos",    stock: 10, destacado: true,  imagen: null },
+  { id: "4", nombre: "Mouse Logitech G305 Inalámbrico", precio: 78000,   precioOriginal: null,    categoria: "Periféricos",    stock: 0,  destacado: false, imagen: null },
+  { id: "5", nombre: "Auriculares HyperX Cloud II",     precio: 185000,  precioOriginal: 210000,  categoria: "Audio",          stock: 7,  destacado: true,  imagen: null },
+  { id: "6", nombre: "SSD Kingston 1TB NVMe M.2",       precio: 130000,  precioOriginal: null,    categoria: "Almacenamiento", stock: 12, destacado: false, imagen: null },
+];
+
+const CATEGORIAS = ["Notebooks","Monitores","Periféricos","Audio","Almacenamiento","Smartphones","Tablets","Redes"];
+
+const PRODUCTO_VACIO = {
+  nombre: "", precio: "", precioOriginal: "",
+  categoria: "", stock: "", destacado: false, imagen: null,
+};
+
+function formatPrice(p) {
+  return new Intl.NumberFormat("es-AR", { style: "currency", currency: "ARS", maximumFractionDigits: 0 }).format(p);
+}
+
+// ─── Modal para crear / editar producto ──────────────────
+function ModalProducto({ producto, onGuardar, onCerrar }) {
+  const esNuevo = !producto?.id;
+  const [form, setForm]     = useState(producto || PRODUCTO_VACIO);
+  const [errores, setErrores] = useState({});
+  const [guardando, setGuardando] = useState(false);
+
+  const set = (key, value) => {
+    setForm((f) => ({ ...f, [key]: value }));
+    setErrores((e) => ({ ...e, [key]: "" }));
+  };
+
+  const validar = () => {
+    const e = {};
+    if (!form.nombre.trim())          e.nombre    = "Requerido";
+    if (!form.precio || form.precio <= 0) e.precio = "Precio inválido";
+    if (!form.categoria)              e.categoria = "Requerido";
+    if (form.stock === "" || form.stock < 0) e.stock = "Stock inválido";
+    setErrores(e);
+    return Object.keys(e).length === 0;
+  };
+
+  const handleGuardar = async () => {
+    if (!validar()) return;
+    setGuardando(true);
+    // Simular delay (reemplazar con llamada a Firestore)
+    await new Promise((r) => setTimeout(r, 600));
+    onGuardar({
+      ...form,
+      id: form.id || String(Date.now()),
+      precio: Number(form.precio),
+      precioOriginal: form.precioOriginal ? Number(form.precioOriginal) : null,
+      stock: Number(form.stock),
+    });
+    setGuardando(false);
+  };
+
+  return (
+    <div className={styles.modalOverlay} onClick={(e) => e.target === e.currentTarget && onCerrar()}>
+      <div className={styles.modal}>
+        <div className={styles.modalHeader}>
+          <h2 className={styles.modalTitulo}>{esNuevo ? "Nuevo producto" : "Editar producto"}</h2>
+          <button className={styles.modalClose} onClick={onCerrar} aria-label="Cerrar">✕</button>
+        </div>
+
+        <div className={styles.modalBody}>
+          <div className={styles.formGrid}>
+
+            {/* Nombre */}
+            <div className={`${styles.formGrupo} ${styles.fullWidth}`}>
+              <label className={styles.formLabel}>Nombre *</label>
+              <input className={`${styles.formInput} ${errores.nombre ? styles.inputError : ""}`}
+                type="text" placeholder="Ej: Notebook Lenovo IdeaPad 15"
+                value={form.nombre} onChange={(e) => set("nombre", e.target.value)} />
+              {errores.nombre && <span className={styles.errorMsg}>{errores.nombre}</span>}
+            </div>
+
+            {/* Categoría */}
+            <div className={styles.formGrupo}>
+              <label className={styles.formLabel}>Categoría *</label>
+              <select className={`${styles.formInput} ${errores.categoria ? styles.inputError : ""}`}
+                value={form.categoria} onChange={(e) => set("categoria", e.target.value)}>
+                <option value="">Seleccioná...</option>
+                {CATEGORIAS.map((c) => <option key={c} value={c}>{c}</option>)}
+              </select>
+              {errores.categoria && <span className={styles.errorMsg}>{errores.categoria}</span>}
+            </div>
+
+            {/* Stock */}
+            <div className={styles.formGrupo}>
+              <label className={styles.formLabel}>Stock *</label>
+              <input className={`${styles.formInput} ${errores.stock ? styles.inputError : ""}`}
+                type="number" min="0" placeholder="0"
+                value={form.stock} onChange={(e) => set("stock", e.target.value)} />
+              {errores.stock && <span className={styles.errorMsg}>{errores.stock}</span>}
+            </div>
+
+            {/* Precio */}
+            <div className={styles.formGrupo}>
+              <label className={styles.formLabel}>Precio *</label>
+              <input className={`${styles.formInput} ${errores.precio ? styles.inputError : ""}`}
+                type="number" min="0" placeholder="850000"
+                value={form.precio} onChange={(e) => set("precio", e.target.value)} />
+              {errores.precio && <span className={styles.errorMsg}>{errores.precio}</span>}
+            </div>
+
+            {/* Precio original */}
+            <div className={styles.formGrupo}>
+              <label className={styles.formLabel}>Precio original <span className={styles.opcional}>(opcional)</span></label>
+              <input className={styles.formInput}
+                type="number" min="0" placeholder="1050000"
+                value={form.precioOriginal || ""} onChange={(e) => set("precioOriginal", e.target.value)} />
+            </div>
+
+            {/* Destacado */}
+            <div className={`${styles.formGrupo} ${styles.fullWidth}`}>
+              <label className={styles.checkLabel}>
+                <input type="checkbox" checked={form.destacado}
+                  onChange={(e) => set("destacado", e.target.checked)} />
+                Mostrar como producto destacado en la homepage
+              </label>
+            </div>
+
+            {/* Imagen URL */}
+            <div className={`${styles.formGrupo} ${styles.fullWidth}`}>
+              <label className={styles.formLabel}>URL de imagen <span className={styles.opcional}>(opcional)</span></label>
+              <input className={styles.formInput}
+                type="url" placeholder="https://firebasestorage.googleapis.com/..."
+                value={form.imagen || ""} onChange={(e) => set("imagen", e.target.value)} />
+              <span className={styles.hint}>Subí la imagen desde Firebase Storage y pegá la URL acá.</span>
+            </div>
+
+          </div>
+        </div>
+
+        <div className={styles.modalFooter}>
+          <button className="btn btn-secondary" onClick={onCerrar}>Cancelar</button>
+          <button className="btn btn-primary" onClick={handleGuardar} disabled={guardando}>
+            {guardando ? <><span className={styles.spinner} /> Guardando...</> : (esNuevo ? "Crear producto" : "Guardar cambios")}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─── Modal de confirmación de eliminación ─────────────────
+function ModalConfirmar({ nombre, onConfirmar, onCancelar }) {
+  return (
+    <div className={styles.modalOverlay}>
+      <div className={`${styles.modal} ${styles.modalChico}`}>
+        <div className={styles.modalHeader}>
+          <h2 className={styles.modalTitulo}>¿Eliminar producto?</h2>
+        </div>
+        <div className={styles.modalBody}>
+          <p className={styles.confirmarTxt}>
+            Vas a eliminar <strong>{nombre}</strong>. Esta acción no se puede deshacer.
+          </p>
+        </div>
+        <div className={styles.modalFooter}>
+          <button className="btn btn-secondary" onClick={onCancelar}>Cancelar</button>
+          <button className={`btn ${styles.btnEliminar}`} onClick={onConfirmar}>Eliminar</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─── Fila de la tabla ─────────────────────────────────────
+function FilaProducto({ producto, onEditar, onEliminar }) {
+  return (
+    <tr className={styles.fila}>
+      <td className={styles.tdImg}>
+        <div className={styles.miniImg}>
+          {producto.imagen
+            ? <img src={producto.imagen} alt={producto.nombre} />
+            : <span className={styles.miniImgPlaceholder}>📷</span>}
+        </div>
+      </td>
+      <td className={styles.tdNombre}>
+        <span className={styles.nombreProducto}>{producto.nombre}</span>
+        {producto.destacado && <span className={styles.badgeDestacado}>Destacado</span>}
+      </td>
+      <td className={styles.tdCategoria}>{producto.categoria}</td>
+      <td className={styles.tdPrecio}>
+        <div className={styles.precioCell}>
+          <span>{formatPrice(producto.precio)}</span>
+          {producto.precioOriginal && (
+            <span className={styles.precioOrig}>{formatPrice(producto.precioOriginal)}</span>
+          )}
+        </div>
+      </td>
+      <td className={styles.tdStock}>
+        <span className={`${styles.stockBadge} ${producto.stock === 0 ? styles.stockCero : producto.stock <= 3 ? styles.stockBajo : styles.stockOk}`}>
+          {producto.stock === 0 ? "Sin stock" : `${producto.stock} uds`}
+        </span>
+      </td>
+      <td className={styles.tdAcciones}>
+        <button className={styles.btnEditar} onClick={() => onEditar(producto)} aria-label="Editar">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+          </svg>
+          Editar
+        </button>
+        <button className={styles.btnBorrar} onClick={() => onEliminar(producto)} aria-label="Eliminar">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+            <path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6" />
+          </svg>
+          Eliminar
+        </button>
+      </td>
+    </tr>
+  );
+}
+
+// ─── Dashboard principal ──────────────────────────────────
+export default function DashboardPage() {
+  const [productos, setProductos]       = useState(PRODUCTOS_INIT);
+  const [busqueda, setBusqueda]         = useState("");
+  const [modalEditar, setModalEditar]   = useState(null);   // producto a editar (null = cerrado)
+  const [modalNuevo, setModalNuevo]     = useState(false);
+  const [modalBorrar, setModalBorrar]   = useState(null);   // producto a borrar
+
+  const productosFiltrados = productos.filter((p) =>
+    p.nombre.toLowerCase().includes(busqueda.toLowerCase()) ||
+    p.categoria.toLowerCase().includes(busqueda.toLowerCase())
+  );
+
+  const handleGuardar = (prod) => {
+    if (prod.id && productos.find((p) => p.id === prod.id)) {
+      setProductos((prev) => prev.map((p) => (p.id === prod.id ? prod : p)));
+    } else {
+      setProductos((prev) => [...prev, prod]);
+    }
+    setModalEditar(null);
+    setModalNuevo(false);
+  };
+
+  const handleEliminar = () => {
+    setProductos((prev) => prev.filter((p) => p.id !== modalBorrar.id));
+    setModalBorrar(null);
+  };
+
+  // Stats rápidas
+  const totalProductos  = productos.length;
+  const sinStock        = productos.filter((p) => p.stock === 0).length;
+  const conDescuento    = productos.filter((p) => p.precioOriginal).length;
+
+  return (
+    <div className={styles.page}>
+
+      {/* Stats */}
+      <div className={styles.stats}>
+        {[
+          { label: "Total productos", valor: totalProductos, icon: "📦" },
+          { label: "Sin stock",       valor: sinStock,       icon: "⚠️", alerta: sinStock > 0 },
+          { label: "En oferta",       valor: conDescuento,   icon: "🏷️" },
+        ].map(({ label, valor, icon, alerta }) => (
+          <div key={label} className={`${styles.statCard} ${alerta ? styles.statAlerta : ""}`}>
+            <span className={styles.statIcon}>{icon}</span>
+            <div>
+              <p className={styles.statValor}>{valor}</p>
+              <p className={styles.statLabel}>{label}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Barra de acciones */}
+      <div className={styles.acciones}>
+        <div className={styles.searchWrapper}>
+          <svg className={styles.searchIcon} width="15" height="15" viewBox="0 0 24 24"
+            fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+            <circle cx="11" cy="11" r="8" /><path d="m21 21-4.35-4.35" />
+          </svg>
+          <input
+            type="search"
+            placeholder="Buscar producto..."
+            className={styles.searchInput}
+            value={busqueda}
+            onChange={(e) => setBusqueda(e.target.value)}
+          />
+        </div>
+        <button className="btn btn-primary" onClick={() => setModalNuevo(true)}>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+            <line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" />
+          </svg>
+          Nuevo producto
+        </button>
+      </div>
+
+      {/* Tabla */}
+      <div className={styles.tablaWrapper}>
+        <table className={styles.tabla}>
+          <thead>
+            <tr className={styles.thead}>
+              <th className={styles.th}></th>
+              <th className={styles.th}>Nombre</th>
+              <th className={styles.th}>Categoría</th>
+              <th className={styles.th}>Precio</th>
+              <th className={styles.th}>Stock</th>
+              <th className={styles.th}>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            {productosFiltrados.length === 0 ? (
+              <tr>
+                <td colSpan={6} className={styles.vacio}>
+                  No hay productos que coincidan con la búsqueda.
+                </td>
+              </tr>
+            ) : (
+              productosFiltrados.map((p) => (
+                <FilaProducto
+                  key={p.id}
+                  producto={p}
+                  onEditar={setModalEditar}
+                  onEliminar={setModalBorrar}
+                />
+              ))
+            )}
+          </tbody>
+        </table>
+      </div>
+
+      {/* Modales */}
+      {(modalNuevo || modalEditar) && (
+        <ModalProducto
+          producto={modalEditar || null}
+          onGuardar={handleGuardar}
+          onCerrar={() => { setModalNuevo(false); setModalEditar(null); }}
+        />
+      )}
+
+      {modalBorrar && (
+        <ModalConfirmar
+          nombre={modalBorrar.nombre}
+          onConfirmar={handleEliminar}
+          onCancelar={() => setModalBorrar(null)}
+        />
+      )}
+    </div>
+  );
+}
+
+DashboardPage.getLayout = withAdminLayout("Productos");
