@@ -1,0 +1,61 @@
+.page {
+  min-height: 80vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-8) 0;
+}
+
+.card {
+  background: var(--color-surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+  padding: var(--space-12) var(--space-8);
+  max-width: 520px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.icono {
+  margin-bottom: var(--space-6);
+}
+
+.titulo {
+  font-size: var(--text-3xl);
+  margin-bottom: var(--space-3);
+  color: var(--color-danger);
+}
+
+.descripcion {
+  font-size: var(--text-base);
+  margin-bottom: var(--space-6);
+  line-height: 1.6;
+}
+
+.detalles {
+  background: var(--color-surface-2);
+  border-radius: var(--radius-md);
+  padding: var(--space-4) var(--space-6);
+  margin-bottom: var(--space-6);
+  text-align: left;
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+}
+
+.detalles p {
+  font-weight: 600;
+  margin-bottom: var(--space-2);
+  color: var(--color-text-primary);
+}
+
+.detalles ul {
+  padding-left: var(--space-6);
+  line-height: 1.8;
+}
+
+.acciones {
+  display: flex;
+  gap: var(--space-3);
+  justify-content: center;
+  flex-wrap: wrap;
+}

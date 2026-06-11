@@ -250,7 +250,6 @@ export default function CheckoutPage() {
     setCargando(true);
 
     try {
-      // Construir el pedido
       const pedido = {
         items: items.map((i) => ({
           id: i.id,
@@ -262,7 +261,6 @@ export default function CheckoutPage() {
         total: subtotal,
       };
 
-      // Llamar al backend para crear la preferencia de pago en E-pagos
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/crear-pago`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -271,16 +269,29 @@ export default function CheckoutPage() {
 
       const data = await res.json();
 
-      if (data.url) {
-        // Redirigir al checkout de E-pagos
-        window.location.href = data.url;
+      if (data.checkoutUrl && data.formData) {
+        const form = document.createElement("form");
+        form.method = "POST";
+        form.action = data.checkoutUrl;
+
+        Object.entries(data.formData).forEach(([key, value]) => {
+          if (value !== null && value !== undefined && value !== "") {
+            const input = document.createElement("input");
+            input.type = "hidden";
+            input.name = key;
+            input.value = String(value);
+            form.appendChild(input);
+          }
+        });
+
+        document.body.appendChild(form);
+        form.submit();
       } else {
-        throw new Error("No se recibió URL de pago");
+        throw new Error(data.error || "No se recibieron datos de pago");
       }
     } catch (err) {
       console.error("Error al crear pago:", err);
       alert("Hubo un error al procesar el pago. Intentá de nuevo.");
-    } finally {
       setCargando(false);
     }
   };

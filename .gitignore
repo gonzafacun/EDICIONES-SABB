@@ -28,6 +28,12 @@ Thumbs.db
 .vscode/settings.json
 .idea/
 
+# Documentación privada ePagos (contiene credenciales)
+epagos/
+
+# graphify AST index (local tool)
+graphify-out/
+
 # Logs
 *.log
 npm-debug.log*
