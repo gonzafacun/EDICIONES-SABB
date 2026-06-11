@@ -1,0 +1,116 @@
+// src/services/productos.js
+// Todas las operaciones de Supabase para la tabla productos
+
+import { supabase } from "../config/supabase";
+
+const TABLE = "productos";
+
+// ─── LECTURA ──────────────────────────────────────────────
+
+/**
+ * Obtiene todos los productos con filtros opcionales.
+ * @param {{ categoria?: string, destacado?: boolean, limite?: number }} opciones
+ */
+export async function getProductos({ categoria, destacado, limite = 100 } = {}) {
+  let query = supabase
+    .from(TABLE)
+    .select("*")
+    .order("creado_en", { ascending: false })
+    .limit(limite);
+
+  if (categoria) query = query.eq("categoria", categoria);
+  if (destacado !== undefined) query = query.eq("destacado", destacado);
+
+  const { data, error } = await query;
+
+  if (error) throw error;
+  return data;
+}
+
+/**
+ * Obtiene un único producto por su ID.
+ */
+export async function getProducto(id) {
+  const { data, error } = await supabase
+    .from(TABLE)
+    .select("*")
+    .eq("id", id)
+    .single();
+
+  if (error) throw error;
+  return data;
+}
+
+/**
+ * Obtiene los productos destacados para la homepage.
+ */
+export async function getProductosDestacados(limite = 6) {
+  const { data, error } = await supabase
+    .from(TABLE)
+    .select("*")
+    .eq("destacado", true)
+    .order("creado_en", { ascending: false })
+    .limit(limite);
+
+  if (error) throw error;
+  return data;
+}
+
+// ─── ESCRITURA (solo admin) ───────────────────────────────
+
+/**
+ * Crea un nuevo producto.
+ * @returns {string} ID del producto creado
+ */
+export async function crearProducto(datos) {
+  const { data, error } = await supabase
+    .from(TABLE)
+    .insert([{
+      ...datos,
+      precio: Number(datos.precio),
+      precio_original: datos.precioOriginal ? Number(datos.precioOriginal) : null,
+      stock: Number(datos.stock) || 0,
+      destacado: Boolean(datos.destacado),
+      imagen: datos.imagen || null,
+      creado_en: new Date().toISOString(),
+      actualizado_en: new Date().toISOString(),
+    }])
+    .select()
+    .single();
+
+  if (error) throw error;
+  return data.id;
+}
+
+/**
+ * Actualiza un producto existente.
+ */
+export async function actualizarProducto(id, datos) {
+  const updates = {
+    ...datos,
+    actualizado_en: new Date().toISOString(),
+  };
+
+  if (updates.precio !== undefined) updates.precio = Number(updates.precio);
+  if (updates.precio_original !== undefined) updates.precio_original = updates.precio_original ? Number(updates.precio_original) : null;
+  if (updates.stock !== undefined) updates.stock = Number(updates.stock);
+
+  const { error } = await supabase
+    .from(TABLE)
+    .update(updates)
+    .eq("id", id);
+
+  if (error) throw error;
+}
+
+/**
+ * Elimina un producto.
+ */
+export async function eliminarProducto(id) {
+  const { error } = await supabase
+    .from(TABLE)
+    .delete()
+    .eq("id", id);
+
+  if (error) throw error;
+}

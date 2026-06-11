@@ -12,6 +12,7 @@
     "test": "NODE_OPTIONS='--experimental-vm-modules' jest --verbose --forceExit"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.108.1",
     "firebase": "^10.12.0",
     "next": "14.2.3",
     "react": "^18.3.0",
