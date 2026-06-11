@@ -309,7 +309,7 @@ app.get("/admin/pedidos", verificarAdmin, async (req, res) => {
 app.patch("/admin/pedidos/:id", verificarAdmin, async (req, res) => {
   try {
     const { estado } = req.body;
-    const estadosValidos = ["pendiente", "pagado", "enviado", "entregado", "rechazado", "devuelto"];
+    const estadosValidos = ["pendiente", "pagado", "acreditado", "enviado", "entregado", "rechazado", "devuelto"];
 
     if (!estadosValidos.includes(estado)) {
       return res.status(400).json({ error: "Estado inválido" });
