@@ -1,28 +1,19 @@
-// src/pages/productos/index.jsx
 import { useState, useMemo, useEffect } from "react";
 import { useRouter } from "next/router";
 import { withLayout } from "../../components/Layout";
-import ProductCard from "../../components/ProductCard";
-import { useFetch } from "../../hooks/useFetch";
-import { getProductos } from "../../services/productos";
 import { useCart } from "../../context/CartContext";
+import { getProductos, getCategorias } from "../../services/firestore";
+import ProductCard from "../../components/ProductCard";
 import styles from "./index.module.css";
 
-const CATEGORIAS = ["Notebooks","Monitores","Periféricos","Audio","Almacenamiento","Smartphones","Tablets","Redes"];
-
 const ORDENAR_OPCIONES = [
-  { value: "destacado",   label: "Destacados primero" },
-  { value: "precio_asc",  label: "Menor precio"       },
-  { value: "precio_desc", label: "Mayor precio"       },
-  { value: "nombre_asc",  label: "A → Z"              },
+  { value: "destacado", label: "Destacados primero" },
+  { value: "precio_asc", label: "Menor precio" },
+  { value: "precio_desc", label: "Mayor precio" },
+  { value: "nombre_asc", label: "A → Z" },
 ];
 
-function SkeletonCard() {
-  return <div className={styles.skeleton} aria-hidden="true" />;
-}
-
-// ─── Panel de filtros ─────────────────────────────────────
-function Filtros({ filtros, onChange, onReset, totalResultados }) {
+function Filtros({ filtros, categorias, onChange, onReset, totalResultados }) {
   return (
     <aside className={styles.filtros}>
       <div className={styles.filtrosHeader}>
@@ -37,14 +28,18 @@ function Filtros({ filtros, onChange, onReset, totalResultados }) {
             <button
               className={`${styles.filtroItem} ${!filtros.categoria ? styles.filtroActivo : ""}`}
               onClick={() => onChange("categoria", "")}
-            >Todas</button>
+            >
+              Todas
+            </button>
           </li>
-          {CATEGORIAS.map((cat) => (
+          {categorias.map((cat) => (
             <li key={cat}>
               <button
                 className={`${styles.filtroItem} ${filtros.categoria === cat ? styles.filtroActivo : ""}`}
                 onClick={() => onChange("categoria", cat)}
-              >{cat}</button>
+              >
+                {cat}
+              </button>
             </li>
           ))}
         </ul>
@@ -53,8 +48,12 @@ function Filtros({ filtros, onChange, onReset, totalResultados }) {
       <div className={styles.filtroGrupo}>
         <h3 className={styles.filtroLabel}>Ofertas</h3>
         <label className={styles.checkboxLabel}>
-          <input type="checkbox" checked={filtros.soloOfertas}
-            onChange={(e) => onChange("soloOfertas", e.target.checked)} className={styles.checkbox} />
+          <input
+            type="checkbox"
+            checked={filtros.soloOfertas}
+            onChange={(e) => onChange("soloOfertas", e.target.checked)}
+            className={styles.checkbox}
+          />
           Solo productos en oferta
         </label>
       </div>
@@ -62,8 +61,12 @@ function Filtros({ filtros, onChange, onReset, totalResultados }) {
       <div className={styles.filtroGrupo}>
         <h3 className={styles.filtroLabel}>Disponibilidad</h3>
         <label className={styles.checkboxLabel}>
-          <input type="checkbox" checked={filtros.soloConStock}
-            onChange={(e) => onChange("soloConStock", e.target.checked)} className={styles.checkbox} />
+          <input
+            type="checkbox"
+            checked={filtros.soloConStock}
+            onChange={(e) => onChange("soloConStock", e.target.checked)}
+            className={styles.checkbox}
+          />
           Con stock disponible
         </label>
       </div>
@@ -75,21 +78,31 @@ function Filtros({ filtros, onChange, onReset, totalResultados }) {
   );
 }
 
-// ─── Barra superior ───────────────────────────────────────
 function BarraSuperior({ busqueda, onBusqueda, orden, onOrden }) {
   return (
     <div className={styles.barraSuperior}>
       <div className={styles.searchWrapper}>
         <svg className={styles.searchIcon} width="16" height="16" viewBox="0 0 24 24"
           fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-          <circle cx="11" cy="11" r="8" /><path d="m21 21-4.35-4.35" />
+          <circle cx="11" cy="11" r="8" />
+          <path d="m21 21-4.35-4.35" />
         </svg>
-        <input type="search" placeholder="Buscar productos..."
-          value={busqueda} onChange={(e) => onBusqueda(e.target.value)}
-          className={styles.searchInput} aria-label="Buscar productos" />
+        <input
+          type="search"
+          placeholder="Buscar productos..."
+          value={busqueda}
+          onChange={(e) => onBusqueda(e.target.value)}
+          className={styles.searchInput}
+          aria-label="Buscar productos"
+        />
       </div>
-      <select value={orden} onChange={(e) => onOrden(e.target.value)}
-        className={styles.selectOrden} aria-label="Ordenar productos">
+
+      <select
+        value={orden}
+        onChange={(e) => onOrden(e.target.value)}
+        className={styles.selectOrden}
+        aria-label="Ordenar productos"
+      >
         {ORDENAR_OPCIONES.map(({ value, label }) => (
           <option key={value} value={value}>{label}</option>
         ))}
@@ -98,17 +111,33 @@ function BarraSuperior({ busqueda, onBusqueda, orden, onOrden }) {
   );
 }
 
-// ─── Página catálogo ──────────────────────────────────────
 export default function ProductosPage() {
-  const router  = useRouter();
+  const router = useRouter();
   const { agregar } = useCart();
 
-  const [filtros, setFiltros] = useState({ categoria: "", soloOfertas: false, soloConStock: false });
-  const [busqueda, setBusqueda]       = useState("");
-  const [orden, setOrden]             = useState("destacado");
+  const [productos, setProductos] = useState([]);
+  const [categorias, setCategorias] = useState([]);
+  const [cargando, setCargando] = useState(true);
+
+  const [filtros, setFiltros] = useState({
+    categoria: "",
+    soloOfertas: false,
+    soloConStock: false,
+  });
+  const [busqueda, setBusqueda] = useState("");
+  const [orden, setOrden] = useState("destacado");
   const [menuFiltros, setMenuFiltros] = useState(false);
 
-  // Leer query params al cargar
+  useEffect(() => {
+    Promise.all([getProductos(), getCategorias()])
+      .then(([prods, cats]) => {
+        setProductos(prods);
+        setCategorias(cats.map((c) => c.nombre || c.id).sort());
+      })
+      .catch(() => {})
+      .finally(() => setCargando(false));
+  }, []);
+
   useEffect(() => {
     if (!router.isReady) return;
     const { categoria, oferta } = router.query;
@@ -116,44 +145,59 @@ export default function ProductosPage() {
     if (oferta === "true") setFiltros((f) => ({ ...f, soloOfertas: true }));
   }, [router.isReady, router.query]);
 
-  // Fetch desde Firestore — se re-ejecuta cuando cambia la categoría
-  const { data: todosLosProductos, cargando, error } = useFetch(
-    () => getProductos({ limite: 200 }),
-    []
-  );
+  const handleFiltro = (key, value) => setFiltros((prev) => ({ ...prev, [key]: value }));
 
-  const handleFiltro  = (key, value) => setFiltros((prev) => ({ ...prev, [key]: value }));
-  const handleReset   = () => { setFiltros({ categoria: "", soloOfertas: false, soloConStock: false }); setBusqueda(""); setOrden("destacado"); };
+  const handleReset = () => {
+    setFiltros({ categoria: "", soloOfertas: false, soloConStock: false });
+    setBusqueda("");
+    setOrden("destacado");
+  };
 
-  // Filtrar y ordenar en el cliente
   const productosFiltrados = useMemo(() => {
-    if (!todosLosProductos) return [];
-    let lista = [...todosLosProductos];
+    let lista = [...productos];
 
-    if (filtros.categoria)    lista = lista.filter((p) => p.categoria === filtros.categoria);
-    if (filtros.soloOfertas)  lista = lista.filter((p) => p.precioOriginal && p.precioOriginal > p.precio);
+    if (filtros.categoria) lista = lista.filter((p) => p.categoria === filtros.categoria);
+    if (filtros.soloOfertas) lista = lista.filter((p) => p.precioOriginal && p.precioOriginal > p.precio);
     if (filtros.soloConStock) lista = lista.filter((p) => p.stock > 0);
+
     if (busqueda.trim()) {
       const q = busqueda.toLowerCase();
-      lista = lista.filter((p) => p.nombre.toLowerCase().includes(q) || p.categoria.toLowerCase().includes(q));
+      lista = lista.filter(
+        (p) => p.nombre.toLowerCase().includes(q) || (p.categoria || "").toLowerCase().includes(q)
+      );
     }
 
     switch (orden) {
-      case "precio_asc":  lista.sort((a, b) => a.precio - b.precio); break;
+      case "precio_asc": lista.sort((a, b) => a.precio - b.precio); break;
       case "precio_desc": lista.sort((a, b) => b.precio - a.precio); break;
-      case "nombre_asc":  lista.sort((a, b) => a.nombre.localeCompare(b.nombre)); break;
-      default:            lista.sort((a, b) => (b.destacado ? 1 : 0) - (a.destacado ? 1 : 0));
+      case "nombre_asc": lista.sort((a, b) => a.nombre.localeCompare(b.nombre)); break;
+      default: lista.sort((a, b) => (b.destacado ? 1 : 0) - (a.destacado ? 1 : 0));
     }
+
     return lista;
-  }, [todosLosProductos, filtros, busqueda, orden]);
+  }, [productos, filtros, busqueda, orden]);
+
+  if (cargando) {
+    return (
+      <div className={styles.page}>
+        <div className="container" style={{ textAlign: "center", padding: "4rem 0" }}>
+          <p>Cargando productos...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className={styles.page}>
       <div className="container">
+
         <div className={styles.pageHeader}>
           <h1 className={styles.pageTitle}>Productos</h1>
-          <button className={styles.btnFiltrosMobile}
-            onClick={() => setMenuFiltros((v) => !v)} aria-expanded={menuFiltros}>
+          <button
+            className={styles.btnFiltrosMobile}
+            onClick={() => setMenuFiltros((v) => !v)}
+            aria-expanded={menuFiltros}
+          >
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
               stroke="currentColor" strokeWidth="2" strokeLinecap="round">
               <line x1="4" y1="6" x2="20" y2="6" />
@@ -165,35 +209,43 @@ export default function ProductosPage() {
         </div>
 
         <div className={styles.layout}>
+
           <div className={`${styles.sidebar} ${menuFiltros ? styles.sidebarOpen : ""}`}>
-            <Filtros filtros={filtros} onChange={handleFiltro} onReset={handleReset}
-              totalResultados={productosFiltrados.length} />
+            <Filtros
+              filtros={filtros}
+              categorias={categorias}
+              onChange={handleFiltro}
+              onReset={handleReset}
+              totalResultados={productosFiltrados.length}
+            />
           </div>
 
           <div className={styles.main}>
-            <BarraSuperior busqueda={busqueda} onBusqueda={setBusqueda} orden={orden} onOrden={setOrden} />
+            <BarraSuperior
+              busqueda={busqueda}
+              onBusqueda={setBusqueda}
+              orden={orden}
+              onOrden={setOrden}
+            />
 
-            {error && <p className={styles.errorTxt}>Error al cargar productos. Intentá de nuevo.</p>}
-
-            {cargando ? (
-              <div className={styles.grid}>
-                {Array.from({ length: 6 }).map((_, i) => <SkeletonCard key={i} />)}
-              </div>
-            ) : productosFiltrados.length === 0 ? (
+            {productosFiltrados.length === 0 ? (
               <div className={styles.sinResultados}>
                 <span className={styles.sinResultadosIcon}>🔍</span>
                 <h3>Sin resultados</h3>
                 <p>Probá con otros filtros o términos de búsqueda.</p>
-                <button className="btn btn-secondary" onClick={handleReset}>Limpiar filtros</button>
+                <button className="btn btn-secondary" onClick={handleReset}>
+                  Limpiar filtros
+                </button>
               </div>
             ) : (
               <div className={styles.grid}>
-                {productosFiltrados.map((p) => (
-                  <ProductCard key={p.id} product={p} onAddToCart={() => agregar(p)} />
+                {productosFiltrados.map((producto) => (
+                  <ProductCard key={producto.id} product={producto} onAddToCart={agregar} />
                 ))}
               </div>
             )}
           </div>
+
         </div>
       </div>
     </div>

@@ -10,14 +10,14 @@ export function CartProvider({ children }) {
   // Persistir en localStorage
   useEffect(() => {
     try {
-      const guardado = localStorage.getItem("techstore_cart");
+      const guardado = localStorage.getItem("ediciones_sabb_cart");
       if (guardado) setItems(JSON.parse(guardado));
     } catch {}
   }, []);
 
   useEffect(() => {
     try {
-      localStorage.setItem("techstore_cart", JSON.stringify(items));
+      localStorage.setItem("ediciones_sabb_cart", JSON.stringify(items));
     } catch {}
   }, [items]);
 

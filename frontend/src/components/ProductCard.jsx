@@ -1,5 +1,6 @@
 // src/components/ProductCard.jsx
 import Link from "next/link";
+import { useCart } from "../context/CartContext";
 import styles from "./ProductCard.module.css";
 
 // ─── Helpers ─────────────────────────────────────────────
@@ -21,7 +22,8 @@ function Badge({ text, variant = "default" }) {
 }
 
 // ─── Componente principal ─────────────────────────────────
-export default function ProductCard({ product, onAddToCart }) {
+export default function ProductCard({ product }) {
+  const { agregar } = useCart();
   const {
     id,
     nombre,
@@ -86,7 +88,7 @@ export default function ProductCard({ product, onAddToCart }) {
         {/* Botón agregar */}
         <button
           className={`btn btn-primary ${styles.btnAgregar}`}
-          onClick={() => onAddToCart?.(product)}
+          onClick={() => agregar(product)}
           disabled={sinStock}
           aria-label={`Agregar ${nombre} al carrito`}
         >
