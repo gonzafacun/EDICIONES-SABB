@@ -8,6 +8,48 @@ const crypto = require("crypto");
 admin.initializeApp();
 const db = admin.firestore();
 
+const rateLimitMap = new Map();
+
+function rateLimit(key, maxRequests = 10, windowMs = 60000) {
+  const now = Date.now();
+  const entry = rateLimitMap.get(key);
+  if (!entry || now - entry.start > windowMs) {
+    rateLimitMap.set(key, { start: now, count: 1 });
+    return false;
+  }
+  entry.count++;
+  if (entry.count > maxRequests) return true;
+  return false;
+}
+
+setInterval(() => {
+  const now = Date.now();
+  for (const [k, v] of rateLimitMap) {
+    if (now - v.start > 120000) rateLimitMap.delete(k);
+  }
+}, 60000);
+
+const EPAGOS_IPS_SANDBOX = [
+  "200.0.241.114",
+  "200.0.241.115",
+  "200.0.241.116",
+  "200.0.241.117",
+  "200.0.241.118",
+  "190.105.228.98",
+  "190.105.228.99",
+  "190.105.228.100",
+  "190.105.228.101",
+  "190.105.228.102",
+];
+
+const EPAGOS_IPS_PROD = [
+  "200.0.241.114",
+  "200.0.241.115",
+  "200.0.241.116",
+  "200.0.241.117",
+  "200.0.241.118",
+];
+
 const CONFIG = {
   epagos: {
     idUsuario: process.env.EPAGOS_ID_USUARIO || functions.config().epagos?.id_usuario,
@@ -15,12 +57,26 @@ const CONFIG = {
     password: process.env.EPAGOS_PASSWORD || functions.config().epagos?.password,
     convenio: process.env.EPAGOS_CONVENIO || functions.config().epagos?.convenio,
     hash: process.env.EPAGOS_HASH || functions.config().epagos?.hash,
-    modo: process.env.EPAGOS_MODO || functions.config().epagos?.modo || "sandbox",
-  },
-  frontend: process.env.FRONTEND_URL || functions.config().app?.frontend_url || "http://localhost:3000",
-  baseUrl: process.env.EPAGOS_BASE_URL || functions.config().epagos?.base_url
-    || `https://us-central1-${process.env.GCLOUD_PROJECT || "tu_proyecto"}.cloudfunctions.net/api`,
+  modo: process.env.EPAGOS_MODO || functions.config().epagos?.modo || "sandbox",
+},
+frontend: process.env.FRONTEND_URL || functions.config().app?.frontend_url || "http://localhost:3000",
+baseUrl: process.env.EPAGOS_BASE_URL || functions.config().epagos?.base_url
+  || `https://us-central1-${process.env.GCLOUD_PROJECT || "tu_proyecto"}.cloudfunctions.net/api`,
 };
+
+const EPAGOS_WEBHOOK_IPS = getModo() === "produccion" ? EPAGOS_IPS_PROD : EPAGOS_IPS_SANDBOX;
+
+function getClienteIP(req) {
+  const fwd = req.headers["x-forwarded-for"];
+  if (fwd) return fwd.split(",")[0].trim();
+  return req.connection?.remoteAddress || req.ip || "0.0.0.0";
+}
+
+function verificarIpWebhook(req) {
+  const ip = getClienteIP(req);
+  if (EPAGOS_WEBHOOK_IPS.length === 0) return true;
+  return EPAGOS_WEBHOOK_IPS.includes(ip);
+}
 
 const EPAGOS_TOKEN_URL = {
   sandbox: "https://sandbox.epagos.com/post.php",
@@ -46,6 +102,22 @@ app.use((req, res, next) => {
   } else {
     express.json()(req, res, next);
   }
+});
+
+app.use((req, res, next) => {
+  if (req.path === "/crear-pago" && req.method === "POST") {
+    const ip = getClienteIP(req);
+    if (rateLimit(`crear-pago:${ip}`, 10, 60000)) {
+      return res.status(429).json({ error: "Demasiadas solicitudes. Intentá de nuevo en un minuto." });
+    }
+  }
+  if (req.path === "/webhook") {
+    const ip = getClienteIP(req);
+    if (rateLimit(`webhook:${ip}`, 100, 60000)) {
+      return res.status(429).send("Rate limit exceeded");
+    }
+  }
+  next();
 });
 
 async function verificarAdmin(req, res, next) {
@@ -95,6 +167,10 @@ async function obtenerToken() {
 
 function verificarHashWebhook(body) {
   const { empresa, nro_operacion, importe, hash } = body;
+  if (!empresa || !nro_operacion || !importe || !hash) {
+    console.warn("Webhook con campos obligatorios faltantes:", { empresa: !!empresa, nro_operacion: !!nro_operacion, importe: !!importe, hash: !!hash });
+    return false;
+  }
   const esperado = crypto
     .createHash("md5")
     .update(`${empresa}${nro_operacion}${importe}${CONFIG.epagos.hash}`)
@@ -113,13 +189,49 @@ app.post("/crear-pago", async (req, res) => {
     if (!items?.length) return res.status(400).json({ error: "El carrito está vacío" });
     if (!comprador?.email) return res.status(400).json({ error: "Datos del comprador incompletos" });
     if (!total || total <= 0) return res.status(400).json({ error: "Importe inválido" });
+    if (total > 10000000) return res.status(400).json({ error: "Importe excede el máximo permitido" });
+    if (!Array.isArray(items) || items.length > 50) return res.status(400).json({ error: "Cantidad de items inválida" });
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(comprador.email)) return res.status(400).json({ error: "Email inválido" });
+
+    for (const item of items) {
+      if (!item.nombre || typeof item.precio !== "number" || item.precio < 0) {
+        return res.status(400).json({ error: "Item inválido en el carrito" });
+      }
+      if (!item.cantidad || item.cantidad < 1 || item.cantidad > 100) {
+        return res.status(400).json({ error: "Cantidad inválida en item del carrito" });
+      }
+    }
+
+    const totalCalculado = items.reduce((sum, item) => sum + item.precio * item.cantidad, 0);
+    if (Math.abs(totalCalculado - total) > 1) {
+      return res.status(400).json({ error: "El total no coincide con la suma de los items" });
+    }
+
+    const sanitizado = {
+      items: items.map((item) => ({
+        nombre: String(item.nombre).slice(0, 200),
+        precio: Number(item.precio),
+        cantidad: Number(item.cantidad),
+      })),
+      comprador: {
+        nombre: String(comprador.nombre || "").slice(0, 100),
+        apellido: String(comprador.apellido || "").slice(0, 100),
+        email: comprador.email,
+        dni: String(comprador.dni || "").replace(/[^0-9]/g, "").slice(0, 20),
+        telefono: String(comprador.telefono || "").replace(/[^0-9+\-() ]/g, "").slice(0, 30),
+        direccion: String(comprador.direccion || "").slice(0, 300),
+      },
+      total: Number(total),
+    };
 
     const token = await obtenerToken();
 
     const pedidoRef = await db.collection("pedidos").add({
-      items,
-      comprador,
-      total,
+      items: sanitizado.items,
+      comprador: sanitizado.comprador,
+      total: sanitizado.total,
       estado: "pendiente",
       creadoEn: admin.firestore.FieldValue.serverTimestamp(),
       actualizadoEn: admin.firestore.FieldValue.serverTimestamp(),
@@ -129,7 +241,7 @@ app.post("/crear-pago", async (req, res) => {
     const checkoutUrl = EPAGOS_CHECKOUT_URL[modo];
     const baseUrl = CONFIG.baseUrl || `https://us-central1-${process.env.GCLOUD_PROJECT || "tu_proyecto"}.cloudfunctions.net/api`;
 
-    const detalleOperacion = items.map((item, idx) => ({
+    const detalleOperacion = sanitizado.items.map((item, idx) => ({
       id_item: String(idx),
       desc_item: item.nombre,
       monto_item: item.precio,
@@ -144,18 +256,18 @@ app.post("/crear-pago", async (req, res) => {
       token,
       numero_operacion: pedidoRef.id,
       id_moneda_operacion: "1",
-      monto_operacion: total,
+      monto_operacion: sanitizado.total,
       detalle_operacion: encodeURIComponent(JSON.stringify(detalleOperacion)),
       detalle_operacion_visible: "1",
       ok_url: `${baseUrl}/retorno-ok`,
       error_url: `${baseUrl}/retorno-error`,
-      nombre_pagador: comprador.nombre || "",
-      apellido_pagador: comprador.apellido || "",
-      email_pagador: comprador.email || "",
+      nombre_pagador: sanitizado.comprador.nombre,
+      apellido_pagador: sanitizado.comprador.apellido,
+      email_pagador: sanitizado.comprador.email,
       tipo_doc_pagador: "1",
-      numero_doc_pagador: comprador.dni || "",
-      numero_telef_pagador: comprador.telefono || "",
-      calle_dom_pagador: comprador.direccion || "",
+      numero_doc_pagador: sanitizado.comprador.dni,
+      numero_telef_pagador: sanitizado.comprador.telefono,
+      calle_dom_pagador: sanitizado.comprador.direccion,
       opc_devolver_qr: "true",
       opc_devolver_codbarras: "false",
       opc_pdf: "false",
@@ -219,6 +331,11 @@ app.all("/retorno-error", async (req, res) => {
 
 app.post("/webhook", async (req, res) => {
   try {
+    if (!verificarIpWebhook(req)) {
+      console.warn("Webhook desde IP no autorizada:", getClienteIP(req));
+      return res.status(403).send("IP no autorizada");
+    }
+
     let body = req.body;
     if (Buffer.isBuffer(body)) {
       const qs = require("querystring");
@@ -249,6 +366,11 @@ app.post("/webhook", async (req, res) => {
 
     if (!pedidoSnap.exists) {
       return res.status(404).send("Pedido no encontrado");
+    }
+
+    const pedidoData = pedidoSnap.data();
+    if (monto_pagado && Math.abs(parseFloat(monto_pagado) - pedidoData.total) > 1) {
+      console.warn(`Webhook monto mismatch: esperado=${pedidoData.total} recibido=${monto_pagado} pedido=${numero_operacion}`);
     }
 
     const esDevolucion = tipo === "D";
