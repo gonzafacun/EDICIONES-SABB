@@ -1,25 +1,20 @@
-// src/pages/admin/dashboard.jsx
 import { useState, useEffect } from "react";
 import { withAdminLayout } from "../../components/AdminLayout";
 import { useFetch } from "../../hooks/useFetch";
-import { getProductos, crearProducto, actualizarProducto, eliminarProducto } from "../../services/productos";
+import { getProductos, crearProducto, actualizarProducto, eliminarProducto } from "../../services/firestore";
+import formatPrice from "../../utils/formatPrice";
 import styles from "./dashboard.module.css";
 
-const CATEGORIAS = ["Notebooks","Monitores","Periféricos","Audio","Almacenamiento","Smartphones","Tablets","Redes"];
+const CATEGORIAS = ["Libros", "Revistas", "Folletos", "Catálogos", "Otros"];
 
 const PRODUCTO_VACIO = {
   nombre: "", precio: "", precioOriginal: "",
   categoria: "", stock: "", destacado: false, imagen: null,
 };
 
-function formatPrice(p) {
-  return new Intl.NumberFormat("es-AR", { style: "currency", currency: "ARS", maximumFractionDigits: 0 }).format(p);
-}
-
-// ─── Modal para crear / editar producto ──────────────────
 function ModalProducto({ producto, onGuardar, onCerrar }) {
   const esNuevo = !producto?.id;
-  const [form, setForm]     = useState(producto || PRODUCTO_VACIO);
+  const [form, setForm] = useState(producto || PRODUCTO_VACIO);
   const [errores, setErrores] = useState({});
   const [guardando, setGuardando] = useState(false);
 
@@ -30,9 +25,9 @@ function ModalProducto({ producto, onGuardar, onCerrar }) {
 
   const validar = () => {
     const e = {};
-    if (!form.nombre.trim())          e.nombre    = "Requerido";
+    if (!form.nombre.trim()) e.nombre = "Requerido";
     if (!form.precio || form.precio <= 0) e.precio = "Precio inválido";
-    if (!form.categoria)              e.categoria = "Requerido";
+    if (!form.categoria) e.categoria = "Requerido";
     if (form.stock === "" || form.stock < 0) e.stock = "Stock inválido";
     setErrores(e);
     return Object.keys(e).length === 0;
@@ -41,16 +36,16 @@ function ModalProducto({ producto, onGuardar, onCerrar }) {
   const handleGuardar = async () => {
     if (!validar()) return;
     setGuardando(true);
-    // Simular delay (reemplazar con llamada a Firestore)
-    await new Promise((r) => setTimeout(r, 600));
-    onGuardar({
-      ...form,
-      id: form.id || String(Date.now()),
-      precio: Number(form.precio),
-      precioOriginal: form.precioOriginal ? Number(form.precioOriginal) : null,
-      stock: Number(form.stock),
-    });
-    setGuardando(false);
+    try {
+      await onGuardar({
+        ...form,
+        precio: Number(form.precio),
+        precioOriginal: form.precioOriginal ? Number(form.precioOriginal) : null,
+        stock: Number(form.stock),
+      });
+    } finally {
+      setGuardando(false);
+    }
   };
 
   return (
@@ -64,16 +59,14 @@ function ModalProducto({ producto, onGuardar, onCerrar }) {
         <div className={styles.modalBody}>
           <div className={styles.formGrid}>
 
-            {/* Nombre */}
             <div className={`${styles.formGrupo} ${styles.fullWidth}`}>
               <label className={styles.formLabel}>Nombre *</label>
               <input className={`${styles.formInput} ${errores.nombre ? styles.inputError : ""}`}
-                type="text" placeholder="Ej: Notebook Lenovo IdeaPad 15"
+                type="text" placeholder="Ej: Libro de poemas"
                 value={form.nombre} onChange={(e) => set("nombre", e.target.value)} />
               {errores.nombre && <span className={styles.errorMsg}>{errores.nombre}</span>}
             </div>
 
-            {/* Categoría */}
             <div className={styles.formGrupo}>
               <label className={styles.formLabel}>Categoría *</label>
               <select className={`${styles.formInput} ${errores.categoria ? styles.inputError : ""}`}
@@ -84,7 +77,6 @@ function ModalProducto({ producto, onGuardar, onCerrar }) {
               {errores.categoria && <span className={styles.errorMsg}>{errores.categoria}</span>}
             </div>
 
-            {/* Stock */}
             <div className={styles.formGrupo}>
               <label className={styles.formLabel}>Stock *</label>
               <input className={`${styles.formInput} ${errores.stock ? styles.inputError : ""}`}
@@ -93,24 +85,21 @@ function ModalProducto({ producto, onGuardar, onCerrar }) {
               {errores.stock && <span className={styles.errorMsg}>{errores.stock}</span>}
             </div>
 
-            {/* Precio */}
             <div className={styles.formGrupo}>
               <label className={styles.formLabel}>Precio *</label>
               <input className={`${styles.formInput} ${errores.precio ? styles.inputError : ""}`}
-                type="number" min="0" placeholder="850000"
+                type="number" min="0" placeholder="50000"
                 value={form.precio} onChange={(e) => set("precio", e.target.value)} />
               {errores.precio && <span className={styles.errorMsg}>{errores.precio}</span>}
             </div>
 
-            {/* Precio original */}
             <div className={styles.formGrupo}>
               <label className={styles.formLabel}>Precio original <span className={styles.opcional}>(opcional)</span></label>
               <input className={styles.formInput}
-                type="number" min="0" placeholder="1050000"
+                type="number" min="0" placeholder="60000"
                 value={form.precioOriginal || ""} onChange={(e) => set("precioOriginal", e.target.value)} />
             </div>
 
-            {/* Destacado */}
             <div className={`${styles.formGrupo} ${styles.fullWidth}`}>
               <label className={styles.checkLabel}>
                 <input type="checkbox" checked={form.destacado}
@@ -119,7 +108,6 @@ function ModalProducto({ producto, onGuardar, onCerrar }) {
               </label>
             </div>
 
-            {/* Imagen URL */}
             <div className={`${styles.formGrupo} ${styles.fullWidth}`}>
               <label className={styles.formLabel}>URL de imagen <span className={styles.opcional}>(opcional)</span></label>
               <input className={styles.formInput}
@@ -142,7 +130,6 @@ function ModalProducto({ producto, onGuardar, onCerrar }) {
   );
 }
 
-// ─── Modal de confirmación de eliminación ─────────────────
 function ModalConfirmar({ nombre, onConfirmar, onCancelar }) {
   return (
     <div className={styles.modalOverlay}>
@@ -164,7 +151,6 @@ function ModalConfirmar({ nombre, onConfirmar, onCancelar }) {
   );
 }
 
-// ─── Fila de la tabla ─────────────────────────────────────
 function FilaProducto({ producto, onEditar, onEliminar }) {
   return (
     <tr className={styles.fila}>
@@ -212,48 +198,70 @@ function FilaProducto({ producto, onEditar, onEliminar }) {
   );
 }
 
-// ─── Dashboard principal ──────────────────────────────────
 export default function DashboardPage() {
-  const [productos, setProductos]       = useState(PRODUCTOS_INIT);
-  const [busqueda, setBusqueda]         = useState("");
-  const [modalEditar, setModalEditar]   = useState(null);   // producto a editar (null = cerrado)
-  const [modalNuevo, setModalNuevo]     = useState(false);
-  const [modalBorrar, setModalBorrar]   = useState(null);   // producto a borrar
+  const { data: productos, cargando, error, recargar } = useFetch(() => getProductos(), []);
+  const [busqueda, setBusqueda] = useState("");
+  const [modalEditar, setModalEditar] = useState(null);
+  const [modalNuevo, setModalNuevo] = useState(false);
+  const [modalBorrar, setModalBorrar] = useState(null);
 
-  const productosFiltrados = productos.filter((p) =>
+  const lista = productos || [];
+  const productosFiltrados = lista.filter((p) =>
     p.nombre.toLowerCase().includes(busqueda.toLowerCase()) ||
-    p.categoria.toLowerCase().includes(busqueda.toLowerCase())
+    (p.categoria || "").toLowerCase().includes(busqueda.toLowerCase())
   );
 
-  const handleGuardar = (prod) => {
-    if (prod.id && productos.find((p) => p.id === prod.id)) {
-      setProductos((prev) => prev.map((p) => (p.id === prod.id ? prod : p)));
+  const handleGuardar = async (prod) => {
+    if (prod.id) {
+      await actualizarProducto(prod.id, prod);
     } else {
-      setProductos((prev) => [...prev, prod]);
+      await crearProducto(prod);
     }
     setModalEditar(null);
     setModalNuevo(false);
+    recargar();
   };
 
-  const handleEliminar = () => {
-    setProductos((prev) => prev.filter((p) => p.id !== modalBorrar.id));
+  const handleEliminar = async () => {
+    await eliminarProducto(modalBorrar.id);
     setModalBorrar(null);
+    recargar();
   };
 
-  // Stats rápidas
-  const totalProductos  = productos.length;
-  const sinStock        = productos.filter((p) => p.stock === 0).length;
-  const conDescuento    = productos.filter((p) => p.precioOriginal).length;
+  const totalProductos = lista.length;
+  const sinStock = lista.filter((p) => p.stock === 0).length;
+  const conDescuento = lista.filter((p) => p.precioOriginal).length;
+
+  if (cargando) {
+    return (
+      <div className={styles.page}>
+        <div style={{ textAlign: "center", padding: "4rem 0" }}>
+          <div className={styles.spinner} />
+          <p>Cargando productos...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className={styles.page}>
+        <div style={{ textAlign: "center", padding: "4rem 0" }}>
+          <p>Error al cargar productos: {error}</p>
+          <button className="btn btn-primary" onClick={recargar}>Reintentar</button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className={styles.page}>
 
-      {/* Stats */}
       <div className={styles.stats}>
         {[
           { label: "Total productos", valor: totalProductos, icon: "📦" },
-          { label: "Sin stock",       valor: sinStock,       icon: "⚠️", alerta: sinStock > 0 },
-          { label: "En oferta",       valor: conDescuento,   icon: "🏷️" },
+          { label: "Sin stock", valor: sinStock, icon: "⚠️", alerta: sinStock > 0 },
+          { label: "En oferta", valor: conDescuento, icon: "🏷️" },
         ].map(({ label, valor, icon, alerta }) => (
           <div key={label} className={`${styles.statCard} ${alerta ? styles.statAlerta : ""}`}>
             <span className={styles.statIcon}>{icon}</span>
@@ -265,7 +273,6 @@ export default function DashboardPage() {
         ))}
       </div>
 
-      {/* Barra de acciones */}
       <div className={styles.acciones}>
         <div className={styles.searchWrapper}>
           <svg className={styles.searchIcon} width="15" height="15" viewBox="0 0 24 24"
@@ -288,7 +295,6 @@ export default function DashboardPage() {
         </button>
       </div>
 
-      {/* Tabla */}
       <div className={styles.tablaWrapper}>
         <table className={styles.tabla}>
           <thead>
@@ -322,7 +328,6 @@ export default function DashboardPage() {
         </table>
       </div>
 
-      {/* Modales */}
       {(modalNuevo || modalEditar) && (
         <ModalProducto
           producto={modalEditar || null}

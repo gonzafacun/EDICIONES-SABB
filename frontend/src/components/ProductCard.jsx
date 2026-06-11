@@ -1,16 +1,8 @@
 // src/components/ProductCard.jsx
 import Link from "next/link";
 import { useCart } from "../context/CartContext";
+import formatPrice from "../utils/formatPrice";
 import styles from "./ProductCard.module.css";
-
-// ─── Helpers ─────────────────────────────────────────────
-function formatPrice(price) {
-  return new Intl.NumberFormat("es-AR", {
-    style: "currency",
-    currency: "ARS",
-    maximumFractionDigits: 0,
-  }).format(price);
-}
 
 // ─── Badge de categoría / oferta ─────────────────────────
 function Badge({ text, variant = "default" }) {

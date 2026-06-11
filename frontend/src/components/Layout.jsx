@@ -57,7 +57,6 @@ export default function Layout({
   children,
   title = "Ediciones Sab",
   description = "Catálogo online de Ediciones Sab",
-  cartCount = 0,
 }) {
   const fullTitle = title === "Ediciones Sab" ? title : `${title} | Ediciones Sab`;
 
@@ -76,7 +75,7 @@ export default function Layout({
       </Head>
 
       <div className={styles.pageWrapper}>
-        <Navbar cartCount={cartCount} />
+        <Navbar />
 
         <main className={styles.pageContent} id="main-content">
           {children}

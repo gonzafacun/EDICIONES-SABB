@@ -3,15 +3,8 @@ import { useState } from "react";
 import Link from "next/link";
 import { useCart } from "../context/CartContext";
 import { withLayout } from "../components/Layout";
+import formatPrice from "../utils/formatPrice";
 import styles from "./checkout.module.css";
-
-function formatPrice(price) {
-  return new Intl.NumberFormat("es-AR", {
-    style: "currency",
-    currency: "ARS",
-    maximumFractionDigits: 0,
-  }).format(price);
-}
 
 // ─── Ítem del resumen ─────────────────────────────────────
 function CartItem({ item, onCantidad, onEliminar }) {

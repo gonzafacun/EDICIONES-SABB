@@ -85,7 +85,7 @@ function Categorias() {
   );
 }
 
-function ProductosDestacados({ productos, onAddToCart }) {
+function ProductosDestacados({ productos }) {
   if (!productos.length) return null;
 
   return (
@@ -102,7 +102,6 @@ function ProductosDestacados({ productos, onAddToCart }) {
             <ProductCard
               key={producto.id}
               product={producto}
-              onAddToCart={onAddToCart}
             />
           ))}
         </div>
@@ -143,7 +142,7 @@ export default function HomePage() {
     <>
       <Hero />
       <Categorias />
-      <ProductosDestacados productos={destacados} onAddToCart={agregar} />
+      <ProductosDestacados productos={destacados} />
       <BannerPromo />
     </>
   );

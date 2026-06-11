@@ -2,13 +2,20 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import Link from "next/link";
 import { withLayout } from "../components/Layout";
+import { useCart } from "../context/CartContext";
+import formatPrice from "../utils/formatPrice";
 import styles from "./pago-exitoso.module.css";
 
 export default function PagoExitosoPage() {
   const router = useRouter();
   const { id } = router.query;
+  const { vaciar } = useCart();
   const [pedido, setPedido] = useState(null);
   const [cargando, setCargando] = useState(true);
+
+  useEffect(() => {
+    vaciar();
+  }, [vaciar]);
 
   useEffect(() => {
     if (!id) { setCargando(false); return; }
@@ -61,7 +68,7 @@ export default function PagoExitosoPage() {
               <div className={styles.resumenLinea}>
                 <span>Total</span>
                 <span className={styles.total}>
-                  {new Intl.NumberFormat("es-AR", { style: "currency", currency: "ARS", maximumFractionDigits: 0 }).format(pedido.total)}
+                  {formatPrice(pedido.total)}
                 </span>
               </div>
             </div>

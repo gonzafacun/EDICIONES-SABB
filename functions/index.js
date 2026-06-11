@@ -18,7 +18,8 @@ const CONFIG = {
     modo: process.env.EPAGOS_MODO || functions.config().epagos?.modo || "sandbox",
   },
   frontend: process.env.FRONTEND_URL || functions.config().app?.frontend_url || "http://localhost:3000",
-  baseUrl: process.env.EPAGOS_BASE_URL || functions.config().epagos?.base_url || "",
+  baseUrl: process.env.EPAGOS_BASE_URL || functions.config().epagos?.base_url
+    || `https://us-central1-${process.env.GCLOUD_PROJECT || "tu_proyecto"}.cloudfunctions.net/api`,
 };
 
 const EPAGOS_TOKEN_URL = {

@@ -51,30 +51,29 @@ export default function AdminLoginPage() {
   return (
     <>
       <Head>
-        <title>Admin Login | TechStore</title>
+        <title>Admin Login | Ediciones Sab</title>
         <meta name="robots" content="noindex, nofollow" />
       </Head>
 
       <div className={styles.page}>
-        <div className={styles.card}>
-          {/* Logo */}
-          <div className={styles.logo}>
-            <span className={styles.logoIcon}>⚡</span>
-            <span className={styles.logoText}>TechStore</span>
-          </div>
+      <div className={styles.card}>
+        <div className={styles.logo}>
+          <span className={styles.logoIcon}>📚</span>
+          <span className={styles.logoText}>Ediciones Sab</span>
+        </div>
 
-          <h1 className={styles.titulo}>Panel de administración</h1>
-          <p className={styles.subtitulo}>Ingresá tus credenciales para continuar</p>
+        <h1 className={styles.titulo}>Panel de administración</h1>
+        <p className={styles.subtitulo}>Ingresá tus credenciales para continuar</p>
 
-          <form onSubmit={handleSubmit} className={styles.form} noValidate>
-            {/* Email */}
-            <div className={styles.grupo}>
-              <label className={styles.label} htmlFor="email">Email</label>
-              <input
-                id="email"
-                type="email"
-                className={styles.input}
-                placeholder="admin@techstore.com"
+        <form onSubmit={handleSubmit} className={styles.form} noValidate>
+          {/* Email */}
+          <div className={styles.grupo}>
+            <label className={styles.label} htmlFor="email">Email</label>
+            <input
+              id="email"
+              type="email"
+              className={styles.input}
+              placeholder="admin@edicionessab.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 autoComplete="email"

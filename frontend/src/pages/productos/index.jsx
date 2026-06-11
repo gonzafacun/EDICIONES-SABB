@@ -1,7 +1,6 @@
 import { useState, useMemo, useEffect } from "react";
 import { useRouter } from "next/router";
 import { withLayout } from "../../components/Layout";
-import { useCart } from "../../context/CartContext";
 import { getProductos, getCategorias } from "../../services/firestore";
 import ProductCard from "../../components/ProductCard";
 import styles from "./index.module.css";
@@ -113,7 +112,6 @@ function BarraSuperior({ busqueda, onBusqueda, orden, onOrden }) {
 
 export default function ProductosPage() {
   const router = useRouter();
-  const { agregar } = useCart();
 
   const [productos, setProductos] = useState([]);
   const [categorias, setCategorias] = useState([]);
@@ -240,7 +238,7 @@ export default function ProductosPage() {
             ) : (
               <div className={styles.grid}>
                 {productosFiltrados.map((producto) => (
-                  <ProductCard key={producto.id} product={producto} onAddToCart={agregar} />
+                  <ProductCard key={producto.id} product={producto} />
                 ))}
               </div>
             )}

@@ -18,8 +18,8 @@ function AdminSidebar({ onLogout }) {
   return (
     <aside className={styles.sidebar}>
       <div className={styles.sidebarLogo}>
-        <span>⚡</span>
-        <span>Admin</span>
+    <span>📚</span>
+    <span>Admin</span>
       </div>
 
       <nav className={styles.sidebarNav}>
@@ -86,7 +86,7 @@ export default function AdminLayout({ children, title = "Admin" }) {
   return (
     <>
       <Head>
-        <title>{title} | TechStore Admin</title>
+        <title>{title} | Ediciones Sab Admin</title>
         <meta name="robots" content="noindex, nofollow" />
       </Head>
       <div className={styles.wrapper}>

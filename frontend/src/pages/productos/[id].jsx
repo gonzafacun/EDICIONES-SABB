@@ -3,16 +3,9 @@ import { useRouter } from "next/router";
 import Link from "next/link";
 import { withLayout } from "../../components/Layout";
 import { useCart } from "../../context/CartContext";
-import { getProductoById } from "../../services/firestore";
+import { getProducto } from "../../services/firestore";
+import formatPrice from "../../utils/formatPrice";
 import styles from "./[id].module.css";
-
-function formatPrice(price) {
-  return new Intl.NumberFormat("es-AR", {
-    style: "currency",
-    currency: "ARS",
-    maximumFractionDigits: 0,
-  }).format(price);
-}
 
 function Galeria({ imagenes, nombre }) {
   const [activa, setActiva] = useState(0);
@@ -91,7 +84,7 @@ export default function ProductoDetallePage() {
   useEffect(() => {
     if (!id) return;
     setCargando(true);
-    getProductoById(id)
+    getProducto(id)
       .then((data) => setProducto(data))
       .catch(() => setProducto(null))
       .finally(() => setCargando(false));
