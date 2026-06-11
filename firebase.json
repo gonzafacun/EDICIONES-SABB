@@ -6,10 +6,10 @@
     "indexes": "firestore.indexes.json"
   },
   
-  "functions": {
-    "source": "functions",
-    "runtime": "nodejs18"
-  },
+  //"functions": {
+  //  "source": "functions",
+  //  "runtime": "nodejs18"
+  //},
   "hosting": {
     "public": "frontend/out",
     "ignore": [
