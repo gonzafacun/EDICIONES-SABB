@@ -3,52 +3,19 @@ const admin = require("firebase-admin");
 const express = require("express");
 const cors = require("cors");
 const axios = require("axios");
-const crypto = require("crypto");
+const {
+  rateLimit,
+  getClienteIP,
+  verificarIpWebhook,
+  verificarHashWebhook,
+  sanitizarCrearPago,
+  validarCrearPago,
+  EPAGOS_IPS_SANDBOX,
+  EPAGOS_IPS_PROD,
+} = require("./utils");
 
 admin.initializeApp();
 const db = admin.firestore();
-
-const rateLimitMap = new Map();
-
-function rateLimit(key, maxRequests = 10, windowMs = 60000) {
-  const now = Date.now();
-  const entry = rateLimitMap.get(key);
-  if (!entry || now - entry.start > windowMs) {
-    rateLimitMap.set(key, { start: now, count: 1 });
-    return false;
-  }
-  entry.count++;
-  if (entry.count > maxRequests) return true;
-  return false;
-}
-
-setInterval(() => {
-  const now = Date.now();
-  for (const [k, v] of rateLimitMap) {
-    if (now - v.start > 120000) rateLimitMap.delete(k);
-  }
-}, 60000);
-
-const EPAGOS_IPS_SANDBOX = [
-  "200.0.241.114",
-  "200.0.241.115",
-  "200.0.241.116",
-  "200.0.241.117",
-  "200.0.241.118",
-  "190.105.228.98",
-  "190.105.228.99",
-  "190.105.228.100",
-  "190.105.228.101",
-  "190.105.228.102",
-];
-
-const EPAGOS_IPS_PROD = [
-  "200.0.241.114",
-  "200.0.241.115",
-  "200.0.241.116",
-  "200.0.241.117",
-  "200.0.241.118",
-];
 
 const CONFIG = {
   epagos: {
@@ -65,18 +32,6 @@ baseUrl: process.env.EPAGOS_BASE_URL || functions.config().epagos?.base_url
 };
 
 const EPAGOS_WEBHOOK_IPS = getModo() === "produccion" ? EPAGOS_IPS_PROD : EPAGOS_IPS_SANDBOX;
-
-function getClienteIP(req) {
-  const fwd = req.headers["x-forwarded-for"];
-  if (fwd) return fwd.split(",")[0].trim();
-  return req.connection?.remoteAddress || req.ip || "0.0.0.0";
-}
-
-function verificarIpWebhook(req) {
-  const ip = getClienteIP(req);
-  if (EPAGOS_WEBHOOK_IPS.length === 0) return true;
-  return EPAGOS_WEBHOOK_IPS.includes(ip);
-}
 
 const EPAGOS_TOKEN_URL = {
   sandbox: "https://sandbox.epagos.com/post.php",
@@ -165,19 +120,6 @@ async function obtenerToken() {
   throw new Error(`ePagos token error: ${data.id_resp} - ${data.respuesta}`);
 }
 
-function verificarHashWebhook(body) {
-  const { empresa, nro_operacion, importe, hash } = body;
-  if (!empresa || !nro_operacion || !importe || !hash) {
-    console.warn("Webhook con campos obligatorios faltantes:", { empresa: !!empresa, nro_operacion: !!nro_operacion, importe: !!importe, hash: !!hash });
-    return false;
-  }
-  const esperado = crypto
-    .createHash("md5")
-    .update(`${empresa}${nro_operacion}${importe}${CONFIG.epagos.hash}`)
-    .digest("hex");
-  return esperado === hash;
-}
-
 app.get("/health", (req, res) => {
   res.json({ status: "ok", timestamp: new Date().toISOString() });
 });
@@ -186,45 +128,10 @@ app.post("/crear-pago", async (req, res) => {
   try {
     const { items, comprador, total } = req.body;
 
-    if (!items?.length) return res.status(400).json({ error: "El carrito está vacío" });
-    if (!comprador?.email) return res.status(400).json({ error: "Datos del comprador incompletos" });
-    if (!total || total <= 0) return res.status(400).json({ error: "Importe inválido" });
-    if (total > 10000000) return res.status(400).json({ error: "Importe excede el máximo permitido" });
-    if (!Array.isArray(items) || items.length > 50) return res.status(400).json({ error: "Cantidad de items inválida" });
+    const errorValidacion = validarCrearPago({ items, comprador, total });
+    if (errorValidacion) return res.status(400).json({ error: errorValidacion });
 
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(comprador.email)) return res.status(400).json({ error: "Email inválido" });
-
-    for (const item of items) {
-      if (!item.nombre || typeof item.precio !== "number" || item.precio < 0) {
-        return res.status(400).json({ error: "Item inválido en el carrito" });
-      }
-      if (!item.cantidad || item.cantidad < 1 || item.cantidad > 100) {
-        return res.status(400).json({ error: "Cantidad inválida en item del carrito" });
-      }
-    }
-
-    const totalCalculado = items.reduce((sum, item) => sum + item.precio * item.cantidad, 0);
-    if (Math.abs(totalCalculado - total) > 1) {
-      return res.status(400).json({ error: "El total no coincide con la suma de los items" });
-    }
-
-    const sanitizado = {
-      items: items.map((item) => ({
-        nombre: String(item.nombre).slice(0, 200),
-        precio: Number(item.precio),
-        cantidad: Number(item.cantidad),
-      })),
-      comprador: {
-        nombre: String(comprador.nombre || "").slice(0, 100),
-        apellido: String(comprador.apellido || "").slice(0, 100),
-        email: comprador.email,
-        dni: String(comprador.dni || "").replace(/[^0-9]/g, "").slice(0, 20),
-        telefono: String(comprador.telefono || "").replace(/[^0-9+\-() ]/g, "").slice(0, 30),
-        direccion: String(comprador.direccion || "").slice(0, 300),
-      },
-      total: Number(total),
-    };
+    const sanitizado = sanitizarCrearPago({ items, comprador, total });
 
     const token = await obtenerToken();
 
@@ -331,7 +238,7 @@ app.all("/retorno-error", async (req, res) => {
 
 app.post("/webhook", async (req, res) => {
   try {
-    if (!verificarIpWebhook(req)) {
+    if (!verificarIpWebhook(req, EPAGOS_WEBHOOK_IPS)) {
       console.warn("Webhook desde IP no autorizada:", getClienteIP(req));
       return res.status(403).send("IP no autorizada");
     }
@@ -342,7 +249,7 @@ app.post("/webhook", async (req, res) => {
       body = qs.parse(body.toString());
     }
 
-    if (!verificarHashWebhook(body)) {
+    if (!verificarHashWebhook(body, CONFIG.epagos.hash)) {
       console.warn("Webhook con hash inválido:", body);
       return res.status(400).json({ error: "Hash inválido" });
     }
