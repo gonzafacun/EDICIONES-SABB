@@ -22,7 +22,7 @@ export default function PagoExitosoPage() {
 
     const fetchPedido = async () => {
       try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/pedido/${id}`);
+        const res = await fetch(`https://wmtvbbczyjdaciuzquqx.supabase.co/functions/v1/pedido/${id}`);
         if (res.ok) {
           const data = await res.json();
           setPedido(data);
