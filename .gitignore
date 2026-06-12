@@ -1,24 +1,26 @@
+Set-Content -Path ".gitignore" -Value @"
 # Dependencias
 node_modules/
 frontend/node_modules/
-functions/node_modules/
 
 # Variables de entorno — NUNCA commitear
 .env
 .env.local
 .env.production
 frontend/.env.local
-functions/.env
 
 # Next.js build
 frontend/.next/
 frontend/out/
 
-# Firebase
+# Firebase (solo hosting)
 .firebase/
 firebase-debug.log
-firestore-debug.log
 ui-debug.log
+
+# Supabase
+supabase/.env
+supabase/functions/*/node_modules/
 
 # Sistema operativo
 .DS_Store
@@ -28,12 +30,10 @@ Thumbs.db
 .vscode/settings.json
 .idea/
 
-# Documentación privada ePagos (contiene credenciales)
+# Documentación privada E-pagos (contiene credenciales)
 epagos/
-
-# graphify AST index (local tool)
-graphify-out/
 
 # Logs
 *.log
 npm-debug.log*
+"@
