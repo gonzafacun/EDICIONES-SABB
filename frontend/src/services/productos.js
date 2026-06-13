@@ -89,12 +89,10 @@ export async function crearProducto(datos) {
   const { data, error } = await supabase
     .from(TABLE)
     .insert([{
-      ...datos,
+      nombre: datos.nombre,
       precio: Number(datos.precio),
-      precio_original: datos.precioOriginal ? Number(datos.precioOriginal) : null,
+      categoria: datos.categoria,
       stock: Number(datos.stock) || 0,
-      destacado: Boolean(datos.destacado),
-      imagen: datos.imagen || null,
       creado_en: new Date().toISOString(),
       actualizado_en: new Date().toISOString(),
     }])
@@ -110,13 +108,13 @@ export async function crearProducto(datos) {
  */
 export async function actualizarProducto(id, datos) {
   const updates = {
-    ...datos,
     actualizado_en: new Date().toISOString(),
   };
 
-  if (updates.precio !== undefined) updates.precio = Number(updates.precio);
-  if (updates.precio_original !== undefined) updates.precio_original = updates.precio_original ? Number(updates.precio_original) : null;
-  if (updates.stock !== undefined) updates.stock = Number(updates.stock);
+  if (datos.nombre !== undefined) updates.nombre = datos.nombre;
+  if (datos.precio !== undefined) updates.precio = Number(datos.precio);
+  if (datos.categoria !== undefined) updates.categoria = datos.categoria;
+  if (datos.stock !== undefined) updates.stock = Number(datos.stock);
 
   const { error } = await supabase
     .from(TABLE)

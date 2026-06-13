@@ -20,10 +20,8 @@ export default function ProductCard({ product }) {
     stock,
   } = product;
 
-  const tieneDescuento = precioOriginal && precioOriginal > precio;
-  const descuento = tieneDescuento
-    ? Math.round((1 - precio / precioOriginal) * 100)
-    : null;
+  const tieneDescuento = false;
+  const descuento = null;
   const sinStock = stock === 0;
 
   const enCarrito = items.find((i) => i.id === id);
@@ -40,23 +38,17 @@ export default function ProductCard({ product }) {
 
       {/* Imagen */}
       <Link href={`/productos/${id}`} className={styles.imageWrapper} tabIndex={-1}>
-        {imagen ? (
-          <img src={imagen} alt={nombre} className={styles.image} loading="lazy" />
-        ) : (
-          <div className={styles.imagePlaceholder}>
-            <svg width="48" height="48" viewBox="0 0 24 24" fill="none"
-              stroke="currentColor" strokeWidth="1.2" strokeLinecap="round">
-              <rect x="3" y="3" width="18" height="18" rx="2" />
-              <circle cx="8.5" cy="8.5" r="1.5" />
-              <path d="m21 15-5-5L5 21" />
-            </svg>
-          </div>
-        )}
+        <div className={styles.imagePlaceholder}>
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" strokeWidth="1.2" strokeLinecap="round">
+            <rect x="3" y="3" width="18" height="18" rx="2" />
+            <circle cx="8.5" cy="8.5" r="1.5" />
+            <path d="m21 15-5-5L5 21" />
+          </svg>
+        </div>
 
         {/* Badges superpuestos */}
         <div className={styles.badges}>
-          {destacado && <span className={styles.badge_destacado}>Destacado</span>}
-          {tieneDescuento && <span className={styles.badge_descuento}>-{descuento}%</span>}
           {sinStock && <span className={styles.badge_sinStock}>Sin stock</span>}
         </div>
       </Link>

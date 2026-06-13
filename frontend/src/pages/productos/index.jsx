@@ -6,7 +6,7 @@ import ProductCard from "../../components/ProductCard";
 import styles from "./index.module.css";
 
 const ORDENAR_OPCIONES = [
-  { value: "destacado", label: "Destacados primero" },
+  { value: "nuevos", label: "Más nuevos" },
   { value: "precio_asc", label: "Menor precio" },
   { value: "precio_desc", label: "Mayor precio" },
   { value: "nombre_asc", label: "A → Z" },
@@ -44,18 +44,7 @@ function Filtros({ filtros, categorias, onChange, onReset, totalResultados }) {
         </ul>
       </div>
 
-      <div className={styles.filtroGrupo}>
-        <h3 className={styles.filtroLabel}>Ofertas</h3>
-        <label className={styles.checkboxLabel}>
-          <input
-            type="checkbox"
-            checked={filtros.soloOfertas}
-            onChange={(e) => onChange("soloOfertas", e.target.checked)}
-            className={styles.checkbox}
-          />
-          Solo productos en oferta
-        </label>
-      </div>
+
 
       <div className={styles.filtroGrupo}>
         <h3 className={styles.filtroLabel}>Disponibilidad</h3>
@@ -150,7 +139,6 @@ export default function ProductosPage() {
 
   const [filtros, setFiltros] = useState({
     categoria: "",
-    soloOfertas: false,
     soloConStock: false,
   });
   const [busqueda, setBusqueda] = useState("");
@@ -170,24 +158,22 @@ export default function ProductosPage() {
 
   useEffect(() => {
     if (!router.isReady) return;
-    const { categoria, oferta } = router.query;
+    const { categoria } = router.query;
     if (categoria) setFiltros((f) => ({ ...f, categoria }));
-    if (oferta === "true") setFiltros((f) => ({ ...f, soloOfertas: true }));
   }, [router.isReady, router.query]);
 
   const handleFiltro = (key, value) => setFiltros((prev) => ({ ...prev, [key]: value }));
 
   const handleReset = () => {
-    setFiltros({ categoria: "", soloOfertas: false, soloConStock: false });
+    setFiltros({ categoria: "", soloConStock: false });
     setBusqueda("");
-    setOrden("destacado");
+    setOrden("nuevos");
   };
 
   const productosFiltrados = useMemo(() => {
     let lista = [...productos];
 
     if (filtros.categoria) lista = lista.filter((p) => p.categoria === filtros.categoria);
-    if (filtros.soloOfertas) lista = lista.filter((p) => p.precioOriginal && p.precioOriginal > p.precio);
     if (filtros.soloConStock) lista = lista.filter((p) => p.stock > 0);
 
     if (busqueda.trim()) {
@@ -201,7 +187,7 @@ export default function ProductosPage() {
       case "precio_asc": lista.sort((a, b) => a.precio - b.precio); break;
       case "precio_desc": lista.sort((a, b) => b.precio - a.precio); break;
       case "nombre_asc": lista.sort((a, b) => a.nombre.localeCompare(b.nombre)); break;
-      default: lista.sort((a, b) => (b.destacado ? 1 : 0) - (a.destacado ? 1 : 0));
+      default: lista.sort((a, b) => new Date(b.creado_en) - new Date(a.creado_en));
     }
 
     return lista;

@@ -7,45 +7,19 @@ import { getProducto } from "../../services/productos";
 import formatPrice from "../../utils/formatPrice";
 import styles from "./[id].module.css";
 
-function Galeria({ imagenes, nombre }) {
-  const [activa, setActiva] = useState(0);
-  const lista = imagenes && imagenes.length > 0 ? imagenes : [null];
-
+function Galeria({ nombre }) {
   return (
     <div className={styles.galeria}>
       <div className={styles.imagenPrincipal}>
-        {lista[activa] ? (
-          <img src={lista[activa]} alt={nombre} className={styles.img} />
-        ) : (
-          <div className={styles.imagenPlaceholder}>
-            <svg width="80" height="80" viewBox="0 0 24 24" fill="none"
-              stroke="currentColor" strokeWidth="1" strokeLinecap="round">
-              <rect x="3" y="3" width="18" height="18" rx="2" />
-              <circle cx="8.5" cy="8.5" r="1.5" />
-              <path d="m21 15-5-5L5 21" />
-            </svg>
-          </div>
-        )}
-      </div>
-
-      {lista.length > 1 && (
-        <div className={styles.miniaturas}>
-          {lista.map((img, i) => (
-            <button
-              key={i}
-              className={`${styles.miniatura} ${i === activa ? styles.miniaturaActiva : ""}`}
-              onClick={() => setActiva(i)}
-              aria-label={`Ver imagen ${i + 1}`}
-            >
-              {img ? (
-                <img src={img} alt="" />
-              ) : (
-                <div className={styles.miniPlaceholder} />
-              )}
-            </button>
-          ))}
+        <div className={styles.imagenPlaceholder}>
+          <svg width="80" height="80" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" strokeWidth="1" strokeLinecap="round">
+            <rect x="3" y="3" width="18" height="18" rx="2" />
+            <circle cx="8.5" cy="8.5" r="1.5" />
+            <path d="m21 15-5-5L5 21" />
+          </svg>
         </div>
-      )}
+      </div>
     </div>
   );
 }
@@ -79,7 +53,6 @@ export default function ProductoDetallePage() {
   const [cargando, setCargando] = useState(true);
   const [cantidadLocal, setCantidadLocal] = useState(1);
   const [agregado, setAgregado] = useState(false);
-  const [tabActiva, setTabActiva] = useState("descripcion");
 
   useEffect(() => {
     if (!id) return;
@@ -111,8 +84,8 @@ export default function ProductoDetallePage() {
     );
   }
 
-  const tieneDescuento = producto.precioOriginal && producto.precioOriginal > producto.precio;
-  const descuento = tieneDescuento ? Math.round((1 - producto.precio / producto.precioOriginal) * 100) : null;
+  const tieneDescuento = false;
+  const descuento = null;
   const sinStock = producto.stock === 0;
 
   const handleAgregar = () => {
@@ -143,7 +116,7 @@ export default function ProductoDetallePage() {
 
         <div className={styles.layout}>
 
-          <Galeria imagenes={producto.imagenes} nombre={producto.nombre} />
+          <Galeria nombre={producto.nombre} />
 
           <div className={styles.info}>
             {producto.categoria && (
@@ -153,12 +126,6 @@ export default function ProductoDetallePage() {
 
             <div className={styles.precioWrapper}>
               <span className={styles.precio}>{formatPrice(producto.precio)}</span>
-              {tieneDescuento && (
-                <>
-                  <span className={styles.precioOriginal}>{formatPrice(producto.precioOriginal)}</span>
-                  <span className={styles.badgeDescuento}>−{descuento}%</span>
-                </>
-              )}
             </div>
 
             <p className={styles.cuotas}>
@@ -209,7 +176,6 @@ export default function ProductoDetallePage() {
                 </Link>
               </div>
             )}
-
             <ul className={styles.garantias}>
               {[
                 { icon: "🚚", texto: "Envío a todo el país" },
@@ -222,43 +188,6 @@ export default function ProductoDetallePage() {
                 </li>
               ))}
             </ul>
-          </div>
-        </div>
-
-        <div className={styles.tabs}>
-          <div className={styles.tabsNav} role="tablist">
-            {[
-              { id: "descripcion", label: "Descripción" },
-              { id: "especificaciones", label: "Especificaciones" },
-            ].map(({ id: tabId, label }) => (
-              <button
-                key={tabId}
-                role="tab"
-                aria-selected={tabActiva === tabId}
-                className={`${styles.tabBtn} ${tabActiva === tabId ? styles.tabActivo : ""}`}
-                onClick={() => setTabActiva(tabId)}
-              >
-                {label}
-              </button>
-            ))}
-          </div>
-
-          <div className={styles.tabContent} role="tabpanel">
-            {tabActiva === "descripcion" && (
-              <p className={styles.descripcion}>{producto.descripcion}</p>
-            )}
-            {tabActiva === "especificaciones" && producto.especificaciones && (
-              <table className={styles.especTable}>
-                <tbody>
-                  {producto.especificaciones.map(({ label, valor }) => (
-                    <tr key={label} className={styles.especRow}>
-                      <td className={styles.especLabel}>{label}</td>
-                      <td className={styles.especValor}>{valor}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            )}
           </div>
         </div>
 

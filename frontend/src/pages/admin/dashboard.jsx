@@ -24,8 +24,8 @@ const CATEGORIAS = [
 ];
 
 const PRODUCTO_VACIO = {
-  nombre: "", precio: "", precioOriginal: "",
-  categoria: "", stock: "", destacado: false, imagen: null,
+  nombre: "", precio: "",
+  categoria: "", stock: "",
 };
 
 function ModalProducto({ producto, onGuardar, onCerrar }) {
@@ -109,28 +109,7 @@ function ModalProducto({ producto, onGuardar, onCerrar }) {
               {errores.precio && <span className={styles.errorMsg}>{errores.precio}</span>}
             </div>
 
-            <div className={styles.formGrupo}>
-              <label className={styles.formLabel}>Precio original <span className={styles.opcional}>(opcional)</span></label>
-              <input className={styles.formInput}
-                type="number" min="0" placeholder="60000"
-                value={form.precioOriginal || ""} onChange={(e) => set("precioOriginal", e.target.value)} />
-            </div>
 
-            <div className={`${styles.formGrupo} ${styles.fullWidth}`}>
-              <label className={styles.checkLabel}>
-                <input type="checkbox" checked={form.destacado}
-                  onChange={(e) => set("destacado", e.target.checked)} />
-                Mostrar como producto destacado en la homepage
-              </label>
-            </div>
-
-            <div className={`${styles.formGrupo} ${styles.fullWidth}`}>
-              <label className={styles.formLabel}>URL de imagen <span className={styles.opcional}>(opcional)</span></label>
-              <input className={styles.formInput}
-                type="url" placeholder="https://firebasestorage.googleapis.com/..."
-                value={form.imagen || ""} onChange={(e) => set("imagen", e.target.value)} />
-              <span className={styles.hint}>Subí la imagen desde Firebase Storage y pegá la URL acá.</span>
-            </div>
 
           </div>
         </div>
@@ -170,25 +149,12 @@ function ModalConfirmar({ nombre, onConfirmar, onCancelar }) {
 function FilaProducto({ producto, onEditar, onEliminar }) {
   return (
     <tr className={styles.fila}>
-      <td className={styles.tdImg}>
-        <div className={styles.miniImg}>
-          {producto.imagen
-            ? <img src={producto.imagen} alt={producto.nombre} />
-            : <span className={styles.miniImgPlaceholder}>📷</span>}
-        </div>
-      </td>
       <td className={styles.tdNombre}>
         <span className={styles.nombreProducto}>{producto.nombre}</span>
-        {producto.destacado && <span className={styles.badgeDestacado}>Destacado</span>}
       </td>
       <td className={styles.tdCategoria}>{producto.categoria}</td>
       <td className={styles.tdPrecio}>
-        <div className={styles.precioCell}>
-          <span>{formatPrice(producto.precio)}</span>
-          {producto.precioOriginal && (
-            <span className={styles.precioOrig}>{formatPrice(producto.precioOriginal)}</span>
-          )}
-        </div>
+        <span>{formatPrice(producto.precio)}</span>
       </td>
       <td className={styles.tdStock}>
         <span className={`${styles.stockBadge} ${producto.stock === 0 ? styles.stockCero : producto.stock <= 3 ? styles.stockBajo : styles.stockOk}`}>
@@ -229,9 +195,19 @@ export default function DashboardPage() {
 
   const handleGuardar = async (prod) => {
     if (prod.id) {
-      await actualizarProducto(prod.id, prod);
+      await actualizarProducto(prod.id, {
+        nombre: prod.nombre,
+        precio: Number(prod.precio),
+        categoria: prod.categoria,
+        stock: Number(prod.stock),
+      });
     } else {
-      await crearProducto(prod);
+      await crearProducto({
+        nombre: prod.nombre,
+        precio: Number(prod.precio),
+        categoria: prod.categoria,
+        stock: Number(prod.stock),
+      });
     }
     setModalEditar(null);
     setModalNuevo(false);
@@ -246,7 +222,6 @@ export default function DashboardPage() {
 
   const totalProductos = lista.length;
   const sinStock = lista.filter((p) => p.stock === 0).length;
-  const conDescuento = lista.filter((p) => p.precioOriginal).length;
 
   if (cargando) {
     return (
@@ -277,7 +252,6 @@ export default function DashboardPage() {
         {[
           { label: "Total productos", valor: totalProductos, icon: "📦" },
           { label: "Sin stock", valor: sinStock, icon: "⚠️", alerta: sinStock > 0 },
-          { label: "En oferta", valor: conDescuento, icon: "🏷️" },
         ].map(({ label, valor, icon, alerta }) => (
           <div key={label} className={`${styles.statCard} ${alerta ? styles.statAlerta : ""}`}>
             <span className={styles.statIcon}>{icon}</span>
@@ -315,7 +289,6 @@ export default function DashboardPage() {
         <table className={styles.tabla}>
           <thead>
             <tr className={styles.thead}>
-              <th className={styles.th}></th>
               <th className={styles.th}>Nombre</th>
               <th className={styles.th}>Categoría</th>
               <th className={styles.th}>Precio</th>

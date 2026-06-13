@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { withLayout } from "../components/Layout";
 
-import { getProductosDestacados } from "../services/productos";
+import { getProductos } from "../services/productos";
 import ProductCard from "../components/ProductCard";
 import styles from "./index.module.css";
 
@@ -124,29 +124,28 @@ function BannerPromo() {
 
 export async function getStaticProps() {
   try {
-    const destacados = await getProductosDestacados();
+    const productos = await getProductos({ limite: 24 });
     return {
       props: {
-        destacadosInitial: destacados || [],
+        productosInitial: productos || [],
       },
     };
   } catch (error) {
     console.error("Error en getStaticProps:", error);
     return {
       props: {
-        destacadosInitial: [],
+        productosInitial: [],
       },
     };
   }
 }
 
-export default function HomePage({ destacadosInitial }) {
-  const [destacados, setDestacados] = useState(destacadosInitial || []);
+export default function HomePage({ productosInitial }) {
+  const [productos, setProductos] = useState(productosInitial || []);
 
   useEffect(() => {
-    // Hidratación en caliente para asegurar stock y precios más recientes
-    getProductosDestacados()
-      .then(setDestacados)
+    getProductos({ limite: 24 })
+      .then(setProductos)
       .catch(() => {});
   }, []);
 
@@ -154,7 +153,7 @@ export default function HomePage({ destacadosInitial }) {
     <>
       <Hero />
       <Categorias />
-      <ProductosDestacados productos={destacados} />
+      <ProductosDestacados productos={productos} />
       <BannerPromo />
     </>
   );
