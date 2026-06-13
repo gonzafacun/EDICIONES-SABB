@@ -77,7 +77,7 @@ export default function ProductoDetallePage() {
 
   const [producto, setProducto] = useState(null);
   const [cargando, setCargando] = useState(true);
-  const [cantidad, setCantidad] = useState(1);
+  const [cantidadLocal, setCantidadLocal] = useState(1);
   const [agregado, setAgregado] = useState(false);
   const [tabActiva, setTabActiva] = useState("descripcion");
 
@@ -116,7 +116,7 @@ export default function ProductoDetallePage() {
   const sinStock = producto.stock === 0;
 
   const handleAgregar = () => {
-    agregar(producto, cantidad);
+    agregar(producto, cantidadLocal);
     setAgregado(true);
     setTimeout(() => setAgregado(false), 2000);
   };
@@ -179,8 +179,8 @@ export default function ProductoDetallePage() {
                 <div className={styles.cantidadWrapper}>
                   <label className={styles.cantidadLabel}>Cantidad</label>
                   <SelectorCantidad
-                    cantidad={cantidad}
-                    onChange={setCantidad}
+                    cantidad={cantidadLocal}
+                    onChange={setCantidadLocal}
                     max={producto.stock}
                   />
                 </div>

@@ -28,7 +28,7 @@ export function CartProvider({ children }) {
       if (existe) {
         return prev.map((i) =>
           i.id === producto.id
-            ? { ...i, cantidad: Math.min(i.cantidad + cantidad, producto.stock) }
+            ? { ...i, cantidad: Math.min(i.cantidad + cantidad, producto.stock || 999) }
             : i
         );
       }
@@ -36,23 +36,30 @@ export function CartProvider({ children }) {
     });
   };
 
-  // Cambiar cantidad de un item
-  const setCantidad = (id, cantidad) => {
-    if (cantidad <= 0) return eliminar(id);
-    setItems((prev) =>
-      prev.map((i) => (i.id === id ? { ...i, cantidad } : i))
-    );
-  };
-
   // Eliminar un item
   const eliminar = (id) => setItems((prev) => prev.filter((i) => i.id !== id));
+
+  // Cambiar cantidad de un item
+  const setCantidad = (id, cantidad) => {
+    if (cantidad <= 0) {
+      eliminar(id);
+      return;
+    }
+    setItems((prev) =>
+      prev.map((i) => {
+        if (i.id !== id) return i;
+        const maxStock = i.stock || 999;
+        return { ...i, cantidad: Math.min(cantidad, maxStock) };
+      })
+    );
+  };
 
   // Vaciar carrito
   const vaciar = () => setItems([]);
 
   // Totales
-  const totalItems    = items.reduce((acc, i) => acc + i.cantidad, 0);
-  const subtotal      = items.reduce((acc, i) => acc + i.precio * i.cantidad, 0);
+  const totalItems = items.reduce((acc, i) => acc + i.cantidad, 0);
+  const subtotal = items.reduce((acc, i) => acc + i.precio * i.cantidad, 0);
 
   return (
     <CartContext.Provider value={{ items, agregar, setCantidad, eliminar, vaciar, totalItems, subtotal }}>

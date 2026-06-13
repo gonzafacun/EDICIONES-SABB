@@ -1,10 +1,10 @@
 // src/components/ProductCard.jsx
+import { useState } from "react";
 import Link from "next/link";
 import { useCart } from "../context/CartContext";
 import formatPrice from "../utils/formatPrice";
 import styles from "./ProductCard.module.css";
 
-// ─── Badge de categoría / oferta ─────────────────────────
 function Badge({ text, variant = "default" }) {
   return (
     <span className={`${styles.badge} ${styles[`badge_${variant}`]}`}>
@@ -13,9 +13,10 @@ function Badge({ text, variant = "default" }) {
   );
 }
 
-// ─── Componente principal ─────────────────────────────────
 export default function ProductCard({ product }) {
-  const { agregar } = useCart();
+  const { agregar, items } = useCart();
+  const [agregado, setAgregado] = useState(false);
+
   const {
     id,
     nombre,
@@ -32,6 +33,15 @@ export default function ProductCard({ product }) {
     ? Math.round((1 - precio / precioOriginal) * 100)
     : null;
   const sinStock = stock === 0;
+
+  const enCarrito = items.find((i) => i.id === id);
+  const cantidadEnCarrito = enCarrito ? enCarrito.cantidad : 0;
+
+  const handleAgregar = () => {
+    agregar(product);
+    setAgregado(true);
+    setTimeout(() => setAgregado(false), 1500);
+  };
 
   return (
     <article className={`${styles.card} ${sinStock ? styles.sinStock : ""}`}>
@@ -79,12 +89,14 @@ export default function ProductCard({ product }) {
 
         {/* Botón agregar */}
         <button
-          className={`btn btn-primary ${styles.btnAgregar}`}
-          onClick={() => agregar(product)}
+          className={`btn btn-primary ${styles.btnAgregar} ${agregado ? styles.btnAgregado : ""}`}
+          onClick={handleAgregar}
           disabled={sinStock}
           aria-label={`Agregar ${nombre} al carrito`}
         >
-          {sinStock ? "Sin stock" : (
+          {sinStock ? "Sin stock" : agregado ? (
+            <>✓ En el carrito{cantidadEnCarrito > 1 ? ` (${cantidadEnCarrito})` : ""}</>
+          ) : (
             <>
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
                 stroke="currentColor" strokeWidth="2" strokeLinecap="round">
@@ -92,7 +104,7 @@ export default function ProductCard({ product }) {
                 <line x1="3" y1="6" x2="21" y2="6" />
                 <path d="M16 10a4 4 0 0 1-8 0" />
               </svg>
-              Agregar
+              Agregar{cantidadEnCarrito > 0 ? ` (${cantidadEnCarrito} en carrito)` : ""}
             </>
           )}
         </button>
