@@ -46,18 +46,7 @@ function Hero() {
           <p>Equipamiento de marcas líderes con atención personalizada.</p>
         </div>
 
-        <div className={styles.heroStats}>
-          {[
-            { value: "Garantía", label: "Oficial y directa" },
-            { value: "Coordinado", label: "Envíos y retiros" },
-            { value: "Soporte", label: "Atención inmediata" },
-          ].map(({ value, label }) => (
-            <div key={label} className={styles.statItem}>
-              <span className={styles.statValue}>{value}</span>
-              <span className={styles.statLabel}>{label}</span>
-            </div>
-          ))}
-        </div>
+
       </div>
     </section>
   );
