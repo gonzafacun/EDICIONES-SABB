@@ -5,8 +5,8 @@
   "devFiles": [],
   "ampDevFiles": [],
   "lowPriorityFiles": [
-    "static/07ez5Iq4f2uJ2_GmZWROJ/_buildManifest.js",
-    "static/07ez5Iq4f2uJ2_GmZWROJ/_ssgManifest.js"
+    "static/WLXN3_MhTxalm1MoV4Ehg/_buildManifest.js",
+    "static/WLXN3_MhTxalm1MoV4Ehg/_ssgManifest.js"
   ],
   "rootMainFiles": [],
   "pages": {
@@ -16,7 +16,7 @@
       "static/chunks/main-5cae7db0f8cf7943.js",
       "static/chunks/814-00e073fec81ef682.js",
       "static/chunks/691-817870d7de52c2d5.js",
-      "static/css/aee30cd58030e5ce.css",
+      "static/css/818cee0f5efbc093.css",
       "static/chunks/pages/index-c95c5f879d5beb09.js"
     ],
     "/_app": [
@@ -61,7 +61,7 @@
       "static/chunks/main-5cae7db0f8cf7943.js",
       "static/chunks/814-00e073fec81ef682.js",
       "static/chunks/691-817870d7de52c2d5.js",
-      "static/css/a663fbf7bf3b6c11.css",
+      "static/css/35b4d62eaea47f80.css",
       "static/chunks/pages/checkout-8f51ebc965283983.js"
     ],
     "/pago-error": [
@@ -70,7 +70,7 @@
       "static/chunks/main-5cae7db0f8cf7943.js",
       "static/chunks/814-00e073fec81ef682.js",
       "static/chunks/691-817870d7de52c2d5.js",
-      "static/css/417e5272a6401639.css",
+      "static/css/19d36f366fafc873.css",
       "static/chunks/pages/pago-error-c090e724fdd994da.js"
     ],
     "/pago-exitoso": [
@@ -79,7 +79,7 @@
       "static/chunks/main-5cae7db0f8cf7943.js",
       "static/chunks/814-00e073fec81ef682.js",
       "static/chunks/691-817870d7de52c2d5.js",
-      "static/css/946b462ebe6b9d2c.css",
+      "static/css/ed4f40f5a715ec68.css",
       "static/chunks/pages/pago-exitoso-b347b803318cc553.js"
     ],
     "/productos": [
@@ -88,7 +88,7 @@
       "static/chunks/main-5cae7db0f8cf7943.js",
       "static/chunks/814-00e073fec81ef682.js",
       "static/chunks/691-817870d7de52c2d5.js",
-      "static/css/0d852d87b8cb8ead.css",
+      "static/css/77936567f46521b0.css",
       "static/chunks/pages/productos-d2c3b83d78492bd0.js"
     ],
     "/productos/[id]": [
@@ -97,7 +97,7 @@
       "static/chunks/main-5cae7db0f8cf7943.js",
       "static/chunks/814-00e073fec81ef682.js",
       "static/chunks/691-817870d7de52c2d5.js",
-      "static/css/305b43365823ca07.css",
+      "static/css/0229e088d17077fa.css",
       "static/chunks/pages/productos/[id]-839cf0a039d192d4.js"
     ]
   },
