@@ -5,7 +5,23 @@ import { getProductos, crearProducto, actualizarProducto, eliminarProducto } fro
 import formatPrice from "../../utils/formatPrice";
 import styles from "./dashboard.module.css";
 
-const CATEGORIAS = ["Libros", "Revistas", "Folletos", "Catálogos", "Otros"];
+const CATEGORIAS = [
+  "Termotanques",
+  "Smart TV",
+  "Celulares",
+  "Notebooks",
+  "Impresoras",
+  "Ventiladores",
+  "Cocinas",
+  "Anafes",
+  "Pavas eléctricas",
+  "Colchones",
+  "Lavarropas",
+  "Secarropas",
+  "Freezer",
+  "Hornos eléctricos",
+  "Otros"
+];
 
 const PRODUCTO_VACIO = {
   nombre: "", precio: "", precioOriginal: "",
@@ -62,7 +78,7 @@ function ModalProducto({ producto, onGuardar, onCerrar }) {
             <div className={`${styles.formGrupo} ${styles.fullWidth}`}>
               <label className={styles.formLabel}>Nombre *</label>
               <input className={`${styles.formInput} ${errores.nombre ? styles.inputError : ""}`}
-                type="text" placeholder="Ej: Libro de poemas"
+                type="text" placeholder='Ej: Smart TV 50" 4K'
                 value={form.nombre} onChange={(e) => set("nombre", e.target.value)} />
               {errores.nombre && <span className={styles.errorMsg}>{errores.nombre}</span>}
             </div>

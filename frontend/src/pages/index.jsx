@@ -128,14 +128,32 @@ function BannerPromo() {
   );
 }
 
-export default function HomePage() {
+export async function getStaticProps() {
+  try {
+    const destacados = await getProductosDestacados();
+    return {
+      props: {
+        destacadosInitial: destacados || [],
+      },
+    };
+  } catch (error) {
+    console.error("Error en getStaticProps:", error);
+    return {
+      props: {
+        destacadosInitial: [],
+      },
+    };
+  }
+}
 
-  const [destacados, setDestacados] = useState([]);
+export default function HomePage({ destacadosInitial }) {
+  const [destacados, setDestacados] = useState(destacadosInitial || []);
 
   useEffect(() => {
+    // Hidratación en caliente para asegurar stock y precios más recientes
     getProductosDestacados()
       .then(setDestacados)
-      .catch(() => setDestacados([]));
+      .catch(() => {});
   }, []);
 
   return (
