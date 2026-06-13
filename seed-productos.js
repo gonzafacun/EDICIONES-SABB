@@ -1,10 +1,14 @@
 const { createClient } = require('@supabase/supabase-js')
 const fs = require('fs')
+require('dotenv').config()
 
-// Credenciales de Supabase (las mismas que usaste en el frontend)
-const supabaseUrl = 'https://wmtvbbczyjdaciuzquqx.supabase.co'
-const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndtdHZiYmN6eWpkYWNpdXpxdXF4Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4MTIwMzU3NywiZXhwIjoyMDk2Nzc5NTc3fQ.jLla52oG2lm5nhjGv0u2Bzpvgc2a3HtkodizfJ_aiWo'
+const supabaseUrl = process.env.SUPABASE_URL
+const supabaseKey = process.env.SUPABASE_SERVICE_KEY
 
+if (!supabaseUrl || !supabaseKey) {
+  console.error('Faltan SUPABASE_URL o SUPABASE_SERVICE_KEY en el .env')
+  process.exit(1)
+}
 const supabase = createClient(supabaseUrl, supabaseKey)
 
 // Lista de productos (179 items)

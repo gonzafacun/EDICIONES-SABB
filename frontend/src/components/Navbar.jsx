@@ -45,6 +45,26 @@ const NAV_LINKS = [
   { href: "/productos", label: "Productos" },
 ];
 
+const CATEGORIAS_MENU = [
+  { href: "/productos?categoria=Termotanques", label: "Termotanques" },
+  { href: "/productos?categoria=Smart TV", label: "Smart TV" },
+  { href: "/productos?categoria=Celulares", label: "Celulares" },
+  { href: "/productos?categoria=Notebooks", label: "Notebooks" },
+  { href: "/productos?categoria=Impresoras", label: "Impresoras" },
+  { href: "/productos?categoria=Ventiladores", label: "Ventiladores" },
+  { href: "/productos?categoria=Cocinas", label: "Cocinas" },
+  { href: "/productos?categoria=Anafes", label: "Anafes" },
+  { href: "/productos?categoria=Pavas eléctricas", label: "Pavas eléctricas" },
+  { href: "/productos?categoria=Colchones", label: "Colchones" },
+  { href: "/productos?categoria=Lavarropas", label: "Lavarropas" },
+  { href: "/productos?categoria=Secarropas", label: "Secarropas" },
+  { href: "/productos?categoria=Freezer", label: "Freezer" },
+  { href: "/productos?categoria=Hornos eléctricos", label: "Hornos eléctricos" },
+  { href: "/productos?categoria=Freidoras de aire", label: "Freidoras de aire" },
+  { href: "/productos?categoria=Planchas", label: "Planchas" },
+  { href: "/productos?categoria=Aspiradoras", label: "Aspiradoras" },
+];
+
 function BrandMark({ compact = false }) {
   return (
     <span className={compact ? styles.logoMobileBrand : styles.logo}>
@@ -97,6 +117,17 @@ export default function Navbar() {
     <>
       <header className={`${styles.navbar} ${scrolled ? styles.scrolled : ""}`} role="banner">
         <div className={`container ${styles.inner}`}>
+          {/* Hamburger a la izquierda */}
+          <button
+            className={styles.hamburgerBtn}
+            onClick={() => setMenuOpen((prev) => !prev)}
+            aria-expanded={menuOpen}
+            aria-controls="mobile-menu"
+            aria-label={menuOpen ? "Cerrar menú" : "Abrir menú"}
+          >
+            <HamburgerIcon open={menuOpen} />
+          </button>
+
           <Link href="/" className={styles.logoLink} aria-label="Ir al inicio">
             <BrandMark />
           </Link>
@@ -115,15 +146,6 @@ export default function Navbar() {
 
           <div className={styles.actions}>
             <CartIcon count={totalItems} />
-            <button
-              className={styles.hamburgerBtn}
-              onClick={() => setMenuOpen((prev) => !prev)}
-              aria-expanded={menuOpen}
-              aria-controls="mobile-menu"
-              aria-label={menuOpen ? "Cerrar menú" : "Abrir menú"}
-            >
-              <HamburgerIcon open={menuOpen} />
-            </button>
           </div>
         </div>
       </header>
@@ -160,6 +182,23 @@ export default function Navbar() {
             </li>
           ))}
         </ul>
+
+        {/* Categorías en el menú móvil */}
+        <div className={styles.mobileCategorias}>
+          <h3 className={styles.mobileCategoriasTitle}>Explorá la tienda</h3>
+          <ul className={styles.mobileCategoriasList} role="list">
+            {CATEGORIAS_MENU.map(({ href, label }) => (
+              <li key={href}>
+                <Link
+                  href={href}
+                  className={styles.mobileCategoriaLink}
+                >
+                  {label}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </div>
 
         <div className={styles.mobileMenuFooter}>
           <Link href="/checkout" className="btn btn-primary" style={{ width: "100%", justifyContent: "center" }}>
