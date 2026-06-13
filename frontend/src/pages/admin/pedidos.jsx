@@ -1,6 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
 import { withAdminLayout } from "../../components/AdminLayout";
-import { supabase } from "../../config/supabase";
 import formatPrice from "../../utils/formatPrice";
 import styles from "./pedidos.module.css";
 
@@ -136,18 +135,17 @@ export default function PedidosPage() {
     setCargando(true);
     setError(null);
     try {
-      const { data: { session } } = await supabase.auth.getSession();
-      const token = session?.access_token;
-      if (!token) throw new Error("No hay sesión activa");
-
       const apiUrl = process.env.NEXT_PUBLIC_API_URL;
       if (!apiUrl) throw new Error("NEXT_PUBLIC_API_URL no está configurada");
 
+      const adminKey = process.env.NEXT_PUBLIC_ADMIN_API_KEY;
+      if (!adminKey) throw new Error("NEXT_PUBLIC_ADMIN_API_KEY no está configurada");
+
       const url = filtroEstado
-        ? `${apiUrl}/admin/pedidos?estado=${filtroEstado}`
-        : `${apiUrl}/admin/pedidos`;
+        ? `${apiUrl}/functions/v1/admin-api/admin/pedidos?estado=${filtroEstado}`
+        : `${apiUrl}/functions/v1/admin-api/admin/pedidos`;
       const res = await fetch(url, {
-        headers: { Authorization: `Bearer ${token}` },
+        headers: { Authorization: `Bearer ${adminKey}` },
       });
       if (!res.ok) throw new Error(`Error al cargar pedidos: ${res.status}`);
       const data = await res.json();
@@ -165,18 +163,17 @@ export default function PedidosPage() {
 
   const handleActualizarEstado = async (pedidoId, nuevoEstado) => {
     try {
-      const { data: { session } } = await supabase.auth.getSession();
-      const token = session?.access_token;
-      if (!token) throw new Error("No hay sesión activa");
-
       const apiUrl = process.env.NEXT_PUBLIC_API_URL;
       if (!apiUrl) throw new Error("NEXT_PUBLIC_API_URL no está configurada");
 
-      const res = await fetch(`${apiUrl}/admin/pedidos/${pedidoId}`, {
+      const adminKey = process.env.NEXT_PUBLIC_ADMIN_API_KEY;
+      if (!adminKey) throw new Error("NEXT_PUBLIC_ADMIN_API_KEY no está configurada");
+
+      const res = await fetch(`${apiUrl}/functions/v1/admin-api/admin/pedidos/${pedidoId}`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${adminKey}`,
         },
         body: JSON.stringify({ estado: nuevoEstado }),
       });
