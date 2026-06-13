@@ -24,14 +24,18 @@ export function useFetch(fn, deps = []) {
       setData(resultado);
     } catch (err) {
       console.error("useFetch error:", err);
-      setError(err.message || "Error al cargar datos");
+      // Mejor manejo de errores: intenta usar message, luego toString()
+      const mensajeError = err?.message || err?.toString?.() || "Error al cargar datos";
+      setError(mensajeError);
     } finally {
       setCargando(false);
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, deps);
 
-  useEffect(() => { ejecutar(); }, [ejecutar]);
+  useEffect(() => { 
+    ejecutar(); 
+  }, [ejecutar]);
 
   return { data, cargando, error, recargar: ejecutar };
 }

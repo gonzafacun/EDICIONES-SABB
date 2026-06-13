@@ -20,14 +20,19 @@ export default function PagoExitosoPage() {
   useEffect(() => {
     if (!id) { setCargando(false); return; }
 
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+
     const fetchPedido = async () => {
       try {
-        const res = await fetch(`https://wmtvbbczyjdaciuzquqx.supabase.co/functions/v1/pedido/${id}`);
+        if (!supabaseUrl) throw new Error("NEXT_PUBLIC_SUPABASE_URL no está configurada");
+        const res = await fetch(`${supabaseUrl}/functions/v1/pedido/${id}`);
         if (res.ok) {
           const data = await res.json();
           setPedido(data);
         }
-      } catch {} finally {
+      } catch (err) {
+        console.error("Error al obtener pedido:", err);
+      } finally {
         setCargando(false);
       }
     };

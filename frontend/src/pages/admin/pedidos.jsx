@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { withAdminLayout } from "../../components/AdminLayout";
-import { useAuth } from "../../context/AuthContext";
+import { supabase } from "../../config/supabase";
 import formatPrice from "../../utils/formatPrice";
 import styles from "./pedidos.module.css";
 
@@ -125,7 +125,6 @@ function ModalDetalle({ pedido, onCerrar, onActualizarEstado }) {
 }
 
 export default function PedidosPage() {
-  const { usuario } = useAuth();
   const [pedidos, setPedidos] = useState([]);
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState(null);
@@ -134,18 +133,23 @@ export default function PedidosPage() {
   const [modalDetalle, setModalDetalle] = useState(null);
 
   const fetchPedidos = useCallback(async () => {
-    if (!usuario) return;
     setCargando(true);
     setError(null);
     try {
-      const token = await usuario.getIdToken();
+      const { data: { session } } = await supabase.auth.getSession();
+      const token = session?.access_token;
+      if (!token) throw new Error("No hay sesión activa");
+
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+      if (!apiUrl) throw new Error("NEXT_PUBLIC_API_URL no está configurada");
+
       const url = filtroEstado
-        ? `${process.env.NEXT_PUBLIC_API_URL}/admin/pedidos?estado=${filtroEstado}`
-        : `${process.env.NEXT_PUBLIC_API_URL}/admin/pedidos`;
+        ? `${apiUrl}/admin/pedidos?estado=${filtroEstado}`
+        : `${apiUrl}/admin/pedidos`;
       const res = await fetch(url, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      if (!res.ok) throw new Error("Error al cargar pedidos");
+      if (!res.ok) throw new Error(`Error al cargar pedidos: ${res.status}`);
       const data = await res.json();
       setPedidos(data.pedidos || []);
     } catch (err) {
@@ -153,25 +157,41 @@ export default function PedidosPage() {
     } finally {
       setCargando(false);
     }
-  }, [usuario, filtroEstado]);
+  }, [filtroEstado]);
 
   useEffect(() => {
     fetchPedidos();
   }, [fetchPedidos]);
 
   const handleActualizarEstado = async (pedidoId, nuevoEstado) => {
-    const token = await usuario.getIdToken();
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/admin/pedidos/${pedidoId}`, {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({ estado: nuevoEstado }),
-    });
-    if (!res.ok) throw new Error("Error al actualizar estado");
-    setModalDetalle(null);
-    fetchPedidos();
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      const token = session?.access_token;
+      if (!token) throw new Error("No hay sesión activa");
+
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+      if (!apiUrl) throw new Error("NEXT_PUBLIC_API_URL no está configurada");
+
+      const res = await fetch(`${apiUrl}/admin/pedidos/${pedidoId}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ estado: nuevoEstado }),
+      });
+
+      if (!res.ok) {
+        const errData = await res.json().catch(() => ({}));
+        throw new Error(errData.error || `Error ${res.status}`);
+      }
+
+      setModalDetalle(null);
+      fetchPedidos();
+    } catch (err) {
+      console.error("Error actualizando estado:", err);
+      alert("Error al actualizar estado: " + err.message);
+    }
   };
 
   const pedidosFiltrados = pedidos.filter((p) => {

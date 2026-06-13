@@ -254,11 +254,21 @@ export default function CheckoutPage() {
         total: subtotal,
       };
 
-      const res = await fetch("https://wmtvbbczyjdaciuzquqx.supabase.co/functions/v1/crear-pago", {
+      const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+      if (!supabaseUrl) {
+        throw new Error("No se configuró NEXT_PUBLIC_SUPABASE_URL");
+      }
+
+      const res = await fetch(`${supabaseUrl}/functions/v1/crear-pago`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(pedido),
       });
+
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({}));
+        throw new Error(errorData.error || `Error del servidor: ${res.status} ${res.statusText}`);
+      }
 
       const data = await res.json();
 
@@ -285,6 +295,7 @@ export default function CheckoutPage() {
     } catch (err) {
       console.error("Error al crear pago:", err);
       alert("Hubo un error al procesar el pago. Intentá de nuevo.");
+    } finally {
       setCargando(false);
     }
   };
