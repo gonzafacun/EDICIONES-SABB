@@ -7,10 +7,10 @@ import ProductCard from "../components/ProductCard";
 import styles from "./index.module.css";
 
 const CATEGORIAS = [
-  { label: "Catálogo", icon: "01" },
-  { label: "Destacados", icon: "02" },
-  { label: "Ofertas", icon: "03" },
-  { label: "Novedades", icon: "04" },
+  { label: "Smart TVs", href: "/productos?categoria=Smart TV", icon: "📺" },
+  { label: "Celulares", href: "/productos?categoria=Celulares", icon: "📱" },
+  { label: "Climatización", href: "/productos?categoria=Ventiladores", icon: "🌬️" },
+  { label: "Lavarropas", href: "/productos?categoria=Lavarropas", icon: "🧼" },
 ];
 
 function Hero() {
@@ -20,21 +20,21 @@ function Hero() {
 
       <div className={`container ${styles.heroContent}`}>
         <div className={styles.heroText}>
-          <span className={styles.heroBadge}>Catálogo oficial</span>
+          <span className={styles.heroBadge}>Tecnología y Electrohogar</span>
           <h1 className={styles.heroTitle}>
             Ediciones Sab
-            <span className={styles.heroAccent}> selección y confianza</span>
+            <span className={styles.heroAccent}> tecnología para tu hogar</span>
           </h1>
           <p className={styles.heroSubtitle}>
-            Una tienda clara, cercana y cuidada para explorar productos,
-            consultar disponibilidad y avanzar con tu compra de forma simple.
+            Encontrá los mejores electrodomésticos, televisores, notebooks y soluciones de climatización.
+            Asesoramiento directo y catálogo completo con garantía oficial.
           </p>
           <div className={styles.heroActions}>
             <Link href="/productos" className="btn btn-primary">
-              Ver catálogo
+              Ver catálogo completo
             </Link>
             <Link href="/checkout" className="btn btn-secondary">
-              Ir al carrito
+              Ver mi carrito
             </Link>
           </div>
         </div>
@@ -43,14 +43,14 @@ function Hero() {
           <div className={styles.logoRing}>
             <img src="/logo-ediciones-sab.jpg" alt="Ediciones Sab" />
           </div>
-          <p>Atención personalizada y catálogo actualizado.</p>
+          <p>Equipamiento de marcas líderes con atención personalizada.</p>
         </div>
 
         <div className={styles.heroStats}>
           {[
-            { value: "Online", label: "Catálogo disponible" },
-            { value: "24hs", label: "Respuesta estimada" },
-            { value: "Seguro", label: "Compra acompañada" },
+            { value: "Garantía", label: "Oficial y directa" },
+            { value: "Coordinado", label: "Envíos y retiros" },
+            { value: "Soporte", label: "Atención inmediata" },
           ].map(({ value, label }) => (
             <div key={label} className={styles.statItem}>
               <span className={styles.statValue}>{value}</span>
@@ -67,12 +67,12 @@ function Categorias() {
   return (
     <section className={styles.section}>
       <div className="container">
-        <h2 className={styles.sectionTitle}>Explorá la tienda</h2>
+        <h2 className={styles.sectionTitle}>Explorá por categoría</h2>
         <div className={styles.categoriasGrid}>
-          {CATEGORIAS.map(({ label, icon }) => (
+          {CATEGORIAS.map(({ label, icon, href }) => (
             <Link
               key={label}
-              href="/productos"
+              href={href}
               className={styles.categoriaCard}
             >
               <span className={styles.categoriaIcon}>{icon}</span>
@@ -116,11 +116,11 @@ function BannerPromo() {
       <div className="container">
         <div className={styles.bannerInner}>
           <div className={styles.bannerText}>
-            <h2 className={styles.bannerTitle}>Consultá disponibilidad y entrega</h2>
-            <p>Coordiná tu pedido con atención personalizada desde el catálogo.</p>
+            <h2 className={styles.bannerTitle}>¿Buscás un modelo en específico?</h2>
+            <p>Consultá por disponibilidad, envíos o especificaciones de cualquier electrodoméstico.</p>
           </div>
           <Link href="/productos" className="btn btn-primary">
-            Empezar consulta
+            Hacer una consulta
           </Link>
         </div>
       </div>

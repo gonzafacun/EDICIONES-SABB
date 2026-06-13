@@ -63,6 +63,7 @@
 
 @media (min-width: 768px) {
   .navDesktop { display: flex; }
+  .hamburgerBtn { display: none; }
 }
 
 .navLink {
@@ -154,8 +155,8 @@
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  width: 20px;
-  height: 14px;
+  width: 24px;
+  height: 24px;
   transition: transform var(--transition-normal);
 }
 
@@ -163,19 +164,21 @@
   stroke: currentColor;
   stroke-width: 2;
   stroke-linecap: round;
-  transition: all var(--transition-normal);
+  transition: transform var(--transition-normal), opacity var(--transition-normal);
+  transform-origin: center;
 }
 
 .hamburgerIcon.open .lineTop {
-  transform: translateY(7px) rotate(45deg);
+  transform: translateY(6px) rotate(45deg);
 }
 
 .hamburgerIcon.open .lineMid {
   opacity: 0;
+  transform: scaleX(0);
 }
 
 .hamburgerIcon.open .lineBottom {
-  transform: translateY(-7px) rotate(-45deg);
+  transform: translateY(-6px) rotate(-45deg);
 }
 
 .overlay {
