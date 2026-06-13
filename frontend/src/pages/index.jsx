@@ -119,9 +119,14 @@ function BannerPromo() {
             <h2 className={styles.bannerTitle}>¿Buscás un modelo en específico?</h2>
             <p>Consultá por disponibilidad, envíos o especificaciones de cualquier electrodoméstico.</p>
           </div>
-          <Link href="/productos" className="btn btn-primary">
+          <a
+            href="https://wa.me/5493644677203?text=Hola%2C%20quiero%20hacer%20una%20consulta%20sobre%20un%20producto"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="btn btn-primary"
+          >
             Hacer una consulta
-          </Link>
+          </a>
         </div>
       </div>
     </section>
