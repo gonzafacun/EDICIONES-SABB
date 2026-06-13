@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { withLayout } from "../components/Layout";
-import { useCart } from "../context/CartContext";
+
 import { getProductosDestacados } from "../services/productos";
 import ProductCard from "../components/ProductCard";
 import styles from "./index.module.css";
@@ -129,7 +129,7 @@ function BannerPromo() {
 }
 
 export default function HomePage() {
-  const { agregar } = useCart();
+
   const [destacados, setDestacados] = useState([]);
 
   useEffect(() => {
