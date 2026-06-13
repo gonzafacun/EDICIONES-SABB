@@ -272,25 +272,10 @@ export default function CheckoutPage() {
 
       const data = await res.json();
 
-      if (data.checkoutUrl && data.formData) {
-        const form = document.createElement("form");
-        form.method = "POST";
-        form.action = data.checkoutUrl;
-
-        Object.entries(data.formData).forEach(([key, value]) => {
-          if (value !== null && value !== undefined && value !== "") {
-            const input = document.createElement("input");
-            input.type = "hidden";
-            input.name = key;
-            input.value = String(value);
-            form.appendChild(input);
-          }
-        });
-
-        document.body.appendChild(form);
-        form.submit();
+      if (data.urlPago) {
+        window.location.href = data.urlPago;
       } else {
-        throw new Error(data.error || "No se recibieron datos de pago");
+        throw new Error(data.error || "No se recibió URL de pago");
       }
     } catch (err) {
       console.error("Error al crear pago:", err);
