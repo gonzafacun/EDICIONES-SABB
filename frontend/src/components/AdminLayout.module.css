@@ -1,21 +1,18 @@
-/* ═══════════════════════════════════════════════════
-   AdminLayout.module.css
-   ═══════════════════════════════════════════════════ */
+/* AdminLayout.module.css - Estilo ML */
 
 .wrapper {
   display: grid;
-  grid-template-columns: 220px 1fr;
+  grid-template-columns: 240px 1fr;
   min-height: 100vh;
   background: var(--color-bg);
 }
 
-/* ─── Sidebar ─────────────────────────────────────── */
 .sidebar {
   background: var(--color-surface);
   border-right: 1px solid var(--color-border);
   display: flex;
   flex-direction: column;
-  padding: var(--space-6);
+  padding: var(--space-5);
   gap: var(--space-6);
   position: sticky;
   top: 0;
@@ -26,15 +23,18 @@
   display: flex;
   align-items: center;
   gap: var(--space-2);
-  font-family: var(--font-display);
-  font-size: var(--text-lg);
-  font-weight: 700;
+  font-family: var(--font-primary);
+  font-size: var(--text-xl);
+  font-weight: 800;
   color: var(--color-text-primary);
-  padding-bottom: var(--space-4);
+  padding: 0 0 var(--space-4);
   border-bottom: 1px solid var(--color-border);
 }
 
-/* ─── Nav ─────────────────────────────────────────── */
+.sidebarLogo span:first-child {
+  font-size: 1.5rem;
+}
+
 .sidebarNav {
   display: flex;
   flex-direction: column;
@@ -50,23 +50,22 @@
   border-radius: var(--radius-md);
   font-size: var(--text-sm);
   font-weight: 500;
-  color: var(--color-text-secondary);
+  color: var(--color-text-tertiary);
   text-decoration: none;
   transition: all var(--transition-fast);
 }
 
 .navItem:hover {
-  background: var(--color-surface-2);
+  background: var(--color-bg-alt);
   color: var(--color-text-primary);
 }
 
 .navActivo {
-  background: var(--color-accent-glow);
-  color: var(--color-accent) !important;
+  background: var(--color-primary-light);
+  color: var(--color-text-primary) !important;
   font-weight: 600;
 }
 
-/* ─── Footer sidebar ──────────────────────────────── */
 .sidebarFooter {
   display: flex;
   flex-direction: column;
@@ -81,47 +80,54 @@
   align-items: center;
   gap: var(--space-2);
   padding: var(--space-2) var(--space-3);
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-md);
   font-size: var(--text-sm);
-  color: var(--color-text-muted);
+  font-weight: 500;
+  color: var(--color-text-tertiary);
   text-decoration: none;
-  background: none;
-  border: none;
+  background: transparent;
+  border: 1px solid transparent;
   cursor: pointer;
   width: 100%;
-  transition: color var(--transition-fast),
-              background var(--transition-fast);
+  transition: all var(--transition-fast);
 }
 
 .verSitio:hover {
-  color: var(--color-accent);
-  background: var(--color-accent-glow);
+  color: var(--color-secondary);
+  border-color: var(--color-secondary);
+  background: var(--color-secondary-light);
 }
 
 .logoutBtn:hover {
   color: var(--color-danger);
-  background: rgba(239,68,68,0.1);
+  border-color: var(--color-danger);
+  background: var(--color-danger-light);
 }
 
-/* ─── Main content ────────────────────────────────── */
 .main {
   overflow-y: auto;
-  padding: var(--space-8);
+  padding: var(--space-6) var(--space-8);
 }
 
-/* ─── Loading ─────────────────────────────────────── */
+@media (min-width: 1024px) {
+  .main { padding: var(--space-8); }
+}
+
 .loading {
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  min-height: 100vh;
+  min-height: 50vh;
+  gap: var(--space-4);
+  color: var(--color-text-tertiary);
 }
 
 .spinner {
-  width: 36px;
-  height: 36px;
+  width: 40px;
+  height: 40px;
   border: 3px solid var(--color-border);
-  border-top-color: var(--color-accent);
+  border-top-color: var(--color-primary);
   border-radius: 50%;
   animation: spin 0.7s linear infinite;
 }
@@ -130,7 +136,6 @@
   to { transform: rotate(360deg); }
 }
 
-/* ─── Responsive ──────────────────────────────────── */
 @media (max-width: 768px) {
   .wrapper {
     grid-template-columns: 1fr;
@@ -141,13 +146,15 @@
     height: auto;
     flex-direction: row;
     align-items: center;
+    flex-wrap: wrap;
     padding: var(--space-4);
     border-right: none;
     border-bottom: 1px solid var(--color-border);
+    gap: var(--space-4);
   }
 
   .sidebarLogo {
-    padding-bottom: 0;
+    padding: 0;
     border-bottom: none;
     margin-right: var(--space-4);
   }
@@ -155,6 +162,7 @@
   .sidebarNav {
     flex-direction: row;
     flex: 1;
+    flex-wrap: wrap;
     gap: var(--space-1);
   }
 

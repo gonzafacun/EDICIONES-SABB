@@ -5,14 +5,6 @@ import { useCart } from "../context/CartContext";
 import formatPrice from "../utils/formatPrice";
 import styles from "./ProductCard.module.css";
 
-function Badge({ text, variant = "default" }) {
-  return (
-    <span className={`${styles.badge} ${styles[`badge_${variant}`]}`}>
-      {text}
-    </span>
-  );
-}
-
 export default function ProductCard({ product }) {
   const { agregar, items } = useCart();
   const [agregado, setAgregado] = useState(false);
@@ -63,9 +55,9 @@ export default function ProductCard({ product }) {
 
         {/* Badges superpuestos */}
         <div className={styles.badges}>
-          {destacado && <Badge text="Destacado" variant="accent" />}
-          {tieneDescuento && <Badge text={`-${descuento}%`} variant="success" />}
-          {sinStock && <Badge text="Sin stock" variant="danger" />}
+          {destacado && <span className={styles.badge_destacado}>Destacado</span>}
+          {tieneDescuento && <span className={styles.badge_descuento}>-{descuento}%</span>}
+          {sinStock && <span className={styles.badge_sinStock}>Sin stock</span>}
         </div>
       </Link>
 
