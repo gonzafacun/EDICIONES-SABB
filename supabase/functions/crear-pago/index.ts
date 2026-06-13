@@ -2,14 +2,28 @@
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts'
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 
-const ALLOWED_ORIGIN = Deno.env.get('FRONTEND_URL') ?? 'https://ediciones-sab.web.app'
+const FRONTEND_URL = Deno.env.get('FRONTEND_URL') ?? 'https://ediciones-sab.web.app'
 
-const corsHeaders = {
-  'Access-Control-Allow-Origin': ALLOWED_ORIGIN,
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+// Allow localhost for development; production URL for deployed site
+const origin = FRONTEND_URL.replace(/\/$/, '')
+const allowedOrigins = [origin]
+if (origin.includes('localhost') || origin.includes('127.0.0.1')) {
+  allowedOrigins.push('http://localhost:3000', 'http://localhost:5173')
+}
+
+function getCorsHeaders(req: Request) {
+  const reqOrigin = req.headers.get('origin') ?? ''
+  const allow = allowedOrigins.includes(reqOrigin) ? reqOrigin : origin
+  return {
+    'Access-Control-Allow-Origin': allow,
+    'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+    'Access-Control-Allow-Methods': 'POST, OPTIONS',
+  }
 }
 
 serve(async (req) => {
+  const corsHeaders = getCorsHeaders(req)
+
   // CORS
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders })
@@ -69,9 +83,9 @@ serve(async (req) => {
       nro_operacion: nroOperacion,
       importe: importe,
       hash: hashResult,
-      url_ok: `${Deno.env.get('FRONTEND_URL')}/pago/confirmado`,
-      url_error: `${Deno.env.get('FRONTEND_URL')}/pago/error`,
-      url_confirmacion: `${Deno.env.get('FRONTEND_URL')}/api/webhook-epagos`,
+      url_ok: `${origin}/pago-exitoso?id=${pedido.id}`,
+      url_error: `${origin}/pago-error?id=${pedido.id}`,
+      url_confirmacion: `${origin}/api/webhook-epagos`,
     })
 
     // 5. Retornar la URL de pago

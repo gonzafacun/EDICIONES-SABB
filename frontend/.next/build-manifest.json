@@ -5,8 +5,8 @@
   "devFiles": [],
   "ampDevFiles": [],
   "lowPriorityFiles": [
-    "static/PsSbSO_vVGiqzl07xAG4a/_buildManifest.js",
-    "static/PsSbSO_vVGiqzl07xAG4a/_ssgManifest.js"
+    "static/5Agd0CuuGKtP9bfIW4JOy/_buildManifest.js",
+    "static/5Agd0CuuGKtP9bfIW4JOy/_ssgManifest.js"
   ],
   "rootMainFiles": [],
   "pages": {
@@ -24,7 +24,7 @@
       "static/chunks/framework-ecc4130bc7a58a64.js",
       "static/chunks/main-5cae7db0f8cf7943.js",
       "static/css/35554a8d60927730.css",
-      "static/chunks/pages/_app-57404f75f4fbf32a.js"
+      "static/chunks/pages/_app-bbd6b082ef948a95.js"
     ],
     "/_error": [
       "static/chunks/webpack-ee7e63bc15b31913.js",
@@ -80,7 +80,7 @@
       "static/chunks/814-00e073fec81ef682.js",
       "static/chunks/691-81f5336334cc0d1a.js",
       "static/css/04f92e871cfe8d12.css",
-      "static/chunks/pages/pago-exitoso-b347b803318cc553.js"
+      "static/chunks/pages/pago-exitoso-a247f189d568562a.js"
     ],
     "/productos": [
       "static/chunks/webpack-ee7e63bc15b31913.js",

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useRouter } from "next/router";
 import Link from "next/link";
 import { withLayout } from "../components/Layout";
@@ -8,37 +8,12 @@ import styles from "./pago-exitoso.module.css";
 
 export default function PagoExitosoPage() {
   const router = useRouter();
-  const { id } = router.query;
+  const { id, total } = router.query;
   const { vaciar } = useCart();
-  const [pedido, setPedido] = useState(null);
-  const [cargando, setCargando] = useState(true);
 
   useEffect(() => {
     vaciar();
   }, [vaciar]);
-
-  useEffect(() => {
-    if (!id) { setCargando(false); return; }
-
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-
-    const fetchPedido = async () => {
-      try {
-        if (!supabaseUrl) throw new Error("NEXT_PUBLIC_SUPABASE_URL no está configurada");
-        const res = await fetch(`${supabaseUrl}/functions/v1/pedido/${id}`);
-        if (res.ok) {
-          const data = await res.json();
-          setPedido(data);
-        }
-      } catch (err) {
-        console.error("Error al obtener pedido:", err);
-      } finally {
-        setCargando(false);
-      }
-    };
-
-    fetchPedido();
-  }, [id]);
 
   return (
     <div className={styles.page}>
@@ -54,26 +29,18 @@ export default function PagoExitosoPage() {
 
           <h1 className={styles.titulo}>¡Pago procesado!</h1>
           <p className={styles.descripcion}>
-            {cargando
-              ? "Verificando tu pedido..."
-              : pedido
-                ? `Tu pedido #${id?.slice(0, 8).toUpperCase()} fue registrado. Recibirás un email de confirmación.`
-                : id
-                  ? `Tu pedido #${id?.slice(0, 8).toUpperCase()} está siendo procesado. Te notificaremos cuando se acredite el pago.`
-                  : "Tu pago está siendo procesado. Te notificaremos cuando se acredite."
+            {id
+              ? `Tu pedido #${id.slice(0, 8).toUpperCase()} está siendo procesado. Te notificaremos cuando se acredite el pago.`
+              : "Tu pago está siendo procesado. Te notificaremos cuando se acredite."
             }
           </p>
 
-          {pedido && (
+          {total && (
             <div className={styles.resumen}>
-              <div className={styles.resumenLinea}>
-                <span>Estado</span>
-                <span className={styles.estadoBadge}>{pedido.estado}</span>
-              </div>
               <div className={styles.resumenLinea}>
                 <span>Total</span>
                 <span className={styles.total}>
-                  {formatPrice(pedido.total)}
+                  {formatPrice(Number(total))}
                 </span>
               </div>
             </div>
