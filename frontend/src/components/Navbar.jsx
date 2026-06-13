@@ -174,7 +174,10 @@ export default function Navbar() {
         <div className={styles.mobileMenuHeader}>
           <BrandMark compact />
           <button className={styles.closeBtn} onClick={() => setMenuOpen(false)} aria-label="Cerrar menú">
-            x
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+              <line x1="4" y1="4" x2="14" y2="14" />
+              <line x1="14" y1="4" x2="4" y2="14" />
+            </svg>
           </button>
         </div>
 
