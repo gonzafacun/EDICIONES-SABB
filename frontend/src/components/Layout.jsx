@@ -15,7 +15,9 @@ function Footer() {
             <span>Ediciones Sab</span>
           </span>
           <p className={styles.footerTagline}>
-            Catálogo seleccionado con atención cercana, asesoramiento y entrega coordinada.
+            Electrodomésticos y tecnología.
+            <br />
+            🚀 ¡Tenemos las mejores promos para vos!
           </p>
         </div>
 
@@ -28,15 +30,14 @@ function Footer() {
         </div>
 
         <div className={styles.footerCol}>
-          <h4 className={styles.footerHeading}>Contacto</h4>
+          <h4 className={styles.footerHeading}>Contacto & Horarios</h4>
           <ul className={styles.footerLinks}>
+            <li>📍 Sáenz Peña, Chaco</li>
+            <li>🕘 Lun a Vier: 9:00hs - 18:00hs</li>
             <li>
-              <a href="https://wa.me/5491100000000" target="_blank" rel="noopener noreferrer">
-                WhatsApp
+              <a href="https://wa.me/5493644677203" target="_blank" rel="noopener noreferrer" style={{ fontWeight: 'bold', color: 'var(--color-primary)' }}>
+                💬 Escribinos por WhatsApp
               </a>
-            </li>
-            <li>
-              <a href="mailto:contacto@edicionessab.com">contacto@edicionessab.com</a>
             </li>
           </ul>
         </div>

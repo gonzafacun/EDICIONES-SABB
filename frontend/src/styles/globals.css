@@ -2,23 +2,23 @@
 
 :root {
   /* Modern Minimalist color palette (Light mode default) */
-  --color-bg: #f8fafc;
-  --color-bg-alt: #f1f5f9;
+  --color-bg: #ffffff;
+  --color-bg-alt: #f8fafc;
   --color-surface: #ffffff;
   --color-surface-hover: #f1f5f9;
-  --color-border: #e2e8f0;
-  --color-border-strong: #cbd5e1;
+  --color-border: #cbd5e1;
+  --color-border-strong: #94a3b8;
   
-  /* Primary Violet for modern tech / premium vibe */
-  --color-primary: #7c3aed;
-  --color-primary-dark: #6d28d9;
-  --color-primary-light: #ede9fe;
-  --color-primary-glow: rgba(124, 58, 237, 0.15);
+  /* Primary Deep Royal Blue - High Contrast & Tech/Appliance standard */
+  --color-primary: #1d4ed8;
+  --color-primary-dark: #1e40af;
+  --color-primary-light: #dbeafe;
+  --color-primary-glow: rgba(29, 78, 216, 0.15);
   
-  /* Secondary Electric Blue */
-  --color-secondary: #2563eb;
-  --color-secondary-dark: #1d4ed8;
-  --color-secondary-light: #dbeafe;
+  /* Secondary Vibrant Orange for active deals / prices */
+  --color-secondary: #ea580c;
+  --color-secondary-dark: #c2410c;
+  --color-secondary-light: #ffedd5;
   
   /* Semantic colors */
   --color-success: #10b981;
@@ -27,11 +27,11 @@
   --color-danger: #ef4444;
   --color-danger-light: #fef2f2;
   
-  /* Text colors */
+  /* Text colors - slate-900 is almost black, highest contrast */
   --color-text-primary: #0f172a;
   --color-text-secondary: #334155;
-  --color-text-tertiary: #64748b;
-  --color-text-muted: #94a3b8;
+  --color-text-tertiary: #475569;
+  --color-text-muted: #64748b;
   --color-text-inverse: #ffffff;
   
   /* Typography - Outfit */
@@ -94,30 +94,30 @@
 @media (prefers-color-scheme: dark) {
   :root {
     /* Modern Minimalist color palette (Dark mode overrides) */
-    --color-bg: #0b0f19;
-    --color-bg-alt: #111827;
+    --color-bg: #090d16;
+    --color-bg-alt: #0f172a;
     --color-surface: #1e293b;
     --color-surface-hover: #334155;
     --color-border: #334155;
     --color-border-strong: #475569;
     
-    /* Violet for dark mode */
-    --color-primary: #a78bfa;
-    --color-primary-dark: #c084fc;
-    --color-primary-light: #2e1065;
-    --color-primary-glow: rgba(167, 139, 250, 0.25);
-    
     /* Blue for dark mode */
-    --color-secondary: #60a5fa;
-    --color-secondary-dark: #93c5fd;
-    --color-secondary-light: #172554;
+    --color-primary: #3b82f6;
+    --color-primary-dark: #2563eb;
+    --color-primary-light: #1e3a8a;
+    --color-primary-glow: rgba(59, 130, 246, 0.25);
+    
+    /* Orange for dark mode */
+    --color-secondary: #f97316;
+    --color-secondary-dark: #ea580c;
+    --color-secondary-light: #431407;
     
     /* Text colors in dark mode */
-    --color-text-primary: #f8fafc;
-    --color-text-secondary: #e2e8f0;
-    --color-text-tertiary: #94a3b8;
-    --color-text-muted: #64748b;
-    --color-text-inverse: #0f172a;
+    --color-text-primary: #ffffff;
+    --color-text-secondary: #f1f5f9;
+    --color-text-tertiary: #cbd5e1;
+    --color-text-muted: #94a3b8;
+    --color-text-inverse: #090d16;
     
     /* Shadows adjustment for dark backgrounds */
     --shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.5);
@@ -230,7 +230,7 @@ img {
 
 .btn-primary {
   background: var(--color-primary);
-  color: var(--color-text-primary);
+  color: var(--color-text-inverse);
   box-shadow: var(--shadow-sm);
 }
 
@@ -238,7 +238,7 @@ img {
   background: var(--color-primary-dark);
   box-shadow: var(--shadow-md);
   transform: translateY(-1px);
-  color: var(--color-text-primary);
+  color: var(--color-text-inverse);
   text-decoration: none;
 }
 
