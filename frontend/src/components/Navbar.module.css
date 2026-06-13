@@ -102,14 +102,14 @@
   height: 40px;
   border-radius: var(--radius-md);
   background: transparent;
-  color: var(--color-text-secondary);
+  color: #1d4ed8;
   text-decoration: none;
   transition: all var(--transition-fast);
 }
 
 .cartBtn:hover {
-  background: var(--color-bg-alt);
-  color: var(--color-text-primary);
+  background: #eff6ff;
+  color: #1e40af;
   text-decoration: none;
 }
 
@@ -139,14 +139,14 @@
   border-radius: var(--radius-md);
   background: transparent;
   border: none;
-  color: var(--color-text-secondary);
+  color: #1d4ed8;
   cursor: pointer;
   transition: all var(--transition-fast);
 }
 
 .hamburgerBtn:hover {
-  background: var(--color-bg-alt);
-  color: var(--color-text-primary);
+  background: #eff6ff;
+  color: #1e40af;
 }
 
 .hamburgerIcon {
