@@ -22,7 +22,7 @@ function toCamelCase(obj) {
  * Obtiene todos los productos con filtros opcionales.
  * @param {{ categoria?: string, destacado?: boolean, limite?: number }} opciones
  */
-export async function getProductos({ categoria, destacado, limite = 100 } = {}) {
+export async function getProductos({ categoria, destacado, limite = 1000 } = {}) {
   let query = supabase
     .from(TABLE)
     .select("*")
@@ -55,7 +55,7 @@ export async function getProducto(id) {
 /**
  * Obtiene los productos destacados para la homepage.
  */
-export async function getProductosDestacados(limite = 6) {
+export async function getProductosDestacados(limite = 24) {
   const { data, error } = await supabase
     .from(TABLE)
     .select("*")
