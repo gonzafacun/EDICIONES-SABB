@@ -3,7 +3,7 @@ import { useRouter } from "next/router";
 import Link from "next/link";
 import { withLayout } from "../../components/Layout";
 import { useCart } from "../../context/CartContext";
-import { getProducto } from "../../services/firestore";
+import { getProducto } from "../../services/productos";
 import formatPrice from "../../utils/formatPrice";
 import styles from "./[id].module.css";
 

@@ -56,6 +56,20 @@ export async function getProductosDestacados(limite = 6) {
   return data;
 }
 
+/**
+ * Obtiene las categorías únicas de productos.
+ */
+export async function getCategorias() {
+  const { data, error } = await supabase
+    .from(TABLE)
+    .select("categoria")
+    .order("categoria");
+
+  if (error) throw error;
+  const unicas = [...new Set(data.map((d) => d.categoria).filter(Boolean))];
+  return unicas.sort();
+}
+
 // ─── ESCRITURA (solo admin) ───────────────────────────────
 
 /**

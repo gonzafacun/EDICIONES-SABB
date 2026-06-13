@@ -1,7 +1,7 @@
 import { useState, useMemo, useEffect } from "react";
 import { useRouter } from "next/router";
 import { withLayout } from "../../components/Layout";
-import { getProductos, getCategorias } from "../../services/firestore";
+import { getProductos, getCategorias } from "../../services/productos";
 import ProductCard from "../../components/ProductCard";
 import styles from "./index.module.css";
 
@@ -130,7 +130,7 @@ export default function ProductosPage() {
     Promise.all([getProductos(), getCategorias()])
       .then(([prods, cats]) => {
         setProductos(prods);
-        setCategorias(cats.map((c) => c.nombre || c.id).sort());
+        setCategorias(Array.isArray(cats) ? cats : []);
       })
       .catch(() => {})
       .finally(() => setCargando(false));

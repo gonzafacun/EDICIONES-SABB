@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { withAdminLayout } from "../../components/AdminLayout";
 import { useFetch } from "../../hooks/useFetch";
-import { getProductos, crearProducto, actualizarProducto, eliminarProducto } from "../../services/firestore";
+import { getProductos, crearProducto, actualizarProducto, eliminarProducto } from "../../services/productos";
 import formatPrice from "../../utils/formatPrice";
 import styles from "./dashboard.module.css";
 
