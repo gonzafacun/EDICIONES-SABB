@@ -168,16 +168,16 @@
   transform-origin: center;
 }
 
-.hamburgerIcon.open .lineTop {
+.lineTopOpen {
   transform: translateY(6px) rotate(45deg);
 }
 
-.hamburgerIcon.open .lineMid {
+.lineMidOpen {
   opacity: 0;
   transform: scaleX(0);
 }
 
-.hamburgerIcon.open .lineBottom {
+.lineBottomOpen {
   transform: translateY(-6px) rotate(-45deg);
 }
 
@@ -217,7 +217,7 @@
   .mobileMenu { display: none; }
 }
 
-.mobileMenu.mobileMenuOpen {
+.mobileMenuOpen {
   transform: translateX(0);
 }
 

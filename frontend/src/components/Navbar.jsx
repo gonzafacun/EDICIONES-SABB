@@ -24,7 +24,7 @@ function CartIcon({ count = 0 }) {
 function HamburgerIcon({ open }) {
   return (
     <svg
-      className={`${styles.hamburgerIcon} ${open ? styles.open : ""}`}
+      className={styles.hamburgerIcon}
       width="24"
       height="24"
       viewBox="0 0 24 24"
@@ -33,9 +33,9 @@ function HamburgerIcon({ open }) {
       strokeWidth="1.8"
       strokeLinecap="round"
     >
-      <line className={styles.lineTop} x1="3" y1="6" x2="21" y2="6" />
-      <line className={styles.lineMid} x1="3" y1="12" x2="21" y2="12" />
-      <line className={styles.lineBottom} x1="3" y1="18" x2="21" y2="18" />
+      <line className={`${styles.lineTop} ${open ? styles.lineTopOpen : ""}`} x1="3" y1="6" x2="21" y2="6" />
+      <line className={`${styles.lineMid} ${open ? styles.lineMidOpen : ""}`} x1="3" y1="12" x2="21" y2="12" />
+      <line className={`${styles.lineBottom} ${open ? styles.lineBottomOpen : ""}`} x1="3" y1="18" x2="21" y2="18" />
     </svg>
   );
 }
@@ -86,6 +86,7 @@ export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const router = useRouter();
   const menuRef = useRef(null);
+  const hamburgerRef = useRef(null);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 8);
@@ -100,7 +101,13 @@ export default function Navbar() {
   useEffect(() => {
     if (!menuOpen) return;
     const handler = (e) => {
-      if (menuRef.current && !menuRef.current.contains(e.target)) setMenuOpen(false);
+      if (
+        menuRef.current &&
+        !menuRef.current.contains(e.target) &&
+        (!hamburgerRef.current || !hamburgerRef.current.contains(e.target))
+      ) {
+        setMenuOpen(false);
+      }
     };
     document.addEventListener("mousedown", handler);
     return () => document.removeEventListener("mousedown", handler);
@@ -119,6 +126,7 @@ export default function Navbar() {
         <div className={`container ${styles.inner}`}>
           {/* Hamburger a la izquierda */}
           <button
+            ref={hamburgerRef}
             className={styles.hamburgerBtn}
             onClick={() => setMenuOpen((prev) => !prev)}
             aria-expanded={menuOpen}
