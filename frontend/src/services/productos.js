@@ -1,9 +1,20 @@
 // src/services/productos.js
 // Todas las operaciones de Supabase para la tabla productos
-
 import { supabase } from "../config/supabase";
 
 const TABLE = "productos";
+
+function toCamelCase(obj) {
+  if (!obj || typeof obj !== 'object') return obj;
+  if (Array.isArray(obj)) return obj.map(toCamelCase);
+  
+  const newObj = {};
+  for (const [key, value] of Object.entries(obj)) {
+    const camelKey = key.replace(/_([a-z])/g, (_, letter) => letter.toUpperCase());
+    newObj[camelKey] = toCamelCase(value);
+  }
+  return newObj;
+}
 
 // ─── LECTURA ──────────────────────────────────────────────
 
@@ -24,7 +35,7 @@ export async function getProductos({ categoria, destacado, limite = 100 } = {}) 
   const { data, error } = await query;
 
   if (error) throw error;
-  return data;
+  return toCamelCase(data);
 }
 
 /**
@@ -38,7 +49,7 @@ export async function getProducto(id) {
     .single();
 
   if (error) throw error;
-  return data;
+  return toCamelCase(data);
 }
 
 /**
@@ -53,7 +64,7 @@ export async function getProductosDestacados(limite = 6) {
     .limit(limite);
 
   if (error) throw error;
-  return data;
+  return toCamelCase(data);
 }
 
 /**
