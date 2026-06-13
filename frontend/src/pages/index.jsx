@@ -26,7 +26,7 @@ function Hero() {
             <span className={styles.heroAccent}> tecnología para tu hogar</span>
           </h1>
           <p className={styles.heroSubtitle}>
-            Encontrá los mejores electrodomésticos, televisores, notebooks y soluciones de climatización.
+            Encontrá los mejores electrodomésticos, televisores y notebooks.
             Asesoramiento directo y catálogo completo con garantía oficial.
           </p>
           <div className={styles.heroActions}>

@@ -229,9 +229,45 @@
   box-shadow: var(--shadow-focus);
 }
 
+.viewToggle {
+  display: flex;
+  background: var(--color-surface);
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.viewToggleBtn {
+  background: transparent;
+  border: none;
+  padding: 8px;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition-fast);
+}
+
+.viewToggleBtn:hover {
+  background: var(--color-bg-alt);
+  color: var(--color-text-primary);
+}
+
+.viewToggleBtn.active {
+  background: var(--color-primary-light);
+  color: var(--color-primary-dark);
+}
+
 .grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-4);
+}
+
+.list {
+  display: grid;
+  grid-template-columns: 1fr;
   gap: var(--space-4);
 }
 
@@ -241,6 +277,10 @@
 
 @media (min-width: 1024px) {
   .grid { grid-template-columns: repeat(4, 1fr); }
+}
+
+@media (max-width: 640px) {
+  /* En movil, si eligen lista se ve de a 1, si eligen grid se ve de a 2 */
 }
 
 .sinResultados {

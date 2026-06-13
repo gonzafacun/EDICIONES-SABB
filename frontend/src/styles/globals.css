@@ -91,42 +91,7 @@
   --z-toast: 400;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    /* Modern Minimalist color palette (Dark mode overrides) */
-    --color-bg: #090d16;
-    --color-bg-alt: #0f172a;
-    --color-surface: #1e293b;
-    --color-surface-hover: #334155;
-    --color-border: #334155;
-    --color-border-strong: #475569;
-    
-    /* Blue for dark mode */
-    --color-primary: #3b82f6;
-    --color-primary-dark: #2563eb;
-    --color-primary-light: #1e3a8a;
-    --color-primary-glow: rgba(59, 130, 246, 0.25);
-    
-    /* Orange for dark mode */
-    --color-secondary: #f97316;
-    --color-secondary-dark: #ea580c;
-    --color-secondary-light: #431407;
-    
-    /* Text colors in dark mode */
-    --color-text-primary: #ffffff;
-    --color-text-secondary: #f1f5f9;
-    --color-text-tertiary: #cbd5e1;
-    --color-text-muted: #94a3b8;
-    --color-text-inverse: #090d16;
-    
-    /* Shadows adjustment for dark backgrounds */
-    --shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.5);
-    --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.4);
-    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
-    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
-    --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
-  }
-}
+/* Dark mode disabled - using light theme only for consistent branding */
 
 /* Reset & Base */
 *, *::before, *::after {

@@ -77,7 +77,7 @@ function Filtros({ filtros, categorias, onChange, onReset, totalResultados }) {
   );
 }
 
-function BarraSuperior({ busqueda, onBusqueda, orden, onOrden }) {
+function BarraSuperior({ busqueda, onBusqueda, orden, onOrden, viewMode, onViewMode }) {
   return (
     <div className={styles.barraSuperior}>
       <div className={styles.searchWrapper}>
@@ -106,6 +106,37 @@ function BarraSuperior({ busqueda, onBusqueda, orden, onOrden }) {
           <option key={value} value={value}>{label}</option>
         ))}
       </select>
+
+      <div className={styles.viewToggle}>
+        <button
+          className={`${styles.viewToggleBtn} ${viewMode === "list" ? styles.active : ""}`}
+          onClick={() => onViewMode("list")}
+          aria-label="Vista de lista"
+          title="Ver en lista"
+        >
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <line x1="8" y1="6" x2="21" y2="6"></line>
+            <line x1="8" y1="12" x2="21" y2="12"></line>
+            <line x1="8" y1="18" x2="21" y2="18"></line>
+            <line x1="3" y1="6" x2="3.01" y2="6"></line>
+            <line x1="3" y1="12" x2="3.01" y2="12"></line>
+            <line x1="3" y1="18" x2="3.01" y2="18"></line>
+          </svg>
+        </button>
+        <button
+          className={`${styles.viewToggleBtn} ${viewMode === "grid" ? styles.active : ""}`}
+          onClick={() => onViewMode("grid")}
+          aria-label="Vista de cuadrícula"
+          title="Ver en cuadrícula"
+        >
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <rect x="3" y="3" width="7" height="7"></rect>
+            <rect x="14" y="3" width="7" height="7"></rect>
+            <rect x="14" y="14" width="7" height="7"></rect>
+            <rect x="3" y="14" width="7" height="7"></rect>
+          </svg>
+        </button>
+      </div>
     </div>
   );
 }
@@ -125,6 +156,7 @@ export default function ProductosPage() {
   const [busqueda, setBusqueda] = useState("");
   const [orden, setOrden] = useState("destacado");
   const [menuFiltros, setMenuFiltros] = useState(false);
+  const [viewMode, setViewMode] = useState("grid"); // "grid" o "list"
 
   useEffect(() => {
     Promise.all([getProductos(), getCategorias()])
@@ -224,6 +256,8 @@ export default function ProductosPage() {
               onBusqueda={setBusqueda}
               orden={orden}
               onOrden={setOrden}
+              viewMode={viewMode}
+              onViewMode={setViewMode}
             />
 
             {productosFiltrados.length === 0 ? (
@@ -236,7 +270,7 @@ export default function ProductosPage() {
                 </button>
               </div>
             ) : (
-              <div className={styles.grid}>
+              <div className={viewMode === "grid" ? styles.grid : styles.list}>
                 {productosFiltrados.map((producto) => (
                   <ProductCard key={producto.id} product={producto} />
                 ))}
