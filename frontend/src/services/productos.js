@@ -30,7 +30,6 @@ export async function getProductos({ categoria, destacado, limite = 1000 } = {})
     .limit(limite);
 
   if (categoria) query = query.eq("categoria", categoria);
-  if (destacado !== undefined) query = query.eq("destacado", destacado);
 
   const { data, error } = await query;
 
@@ -59,7 +58,6 @@ export async function getProductosDestacados(limite = 24) {
   const { data, error } = await supabase
     .from(TABLE)
     .select("*")
-    .eq("destacado", true)
     .order("creado_en", { ascending: false })
     .limit(limite);
 
