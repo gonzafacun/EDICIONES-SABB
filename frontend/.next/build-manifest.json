@@ -5,8 +5,8 @@
   "devFiles": [],
   "ampDevFiles": [],
   "lowPriorityFiles": [
-    "static/EhfuxQivqirj1ic9usjS6/_buildManifest.js",
-    "static/EhfuxQivqirj1ic9usjS6/_ssgManifest.js"
+    "static/-UnKZxbWMfDZrlhkli7vY/_buildManifest.js",
+    "static/-UnKZxbWMfDZrlhkli7vY/_ssgManifest.js"
   ],
   "rootMainFiles": [],
   "pages": {
@@ -53,8 +53,8 @@
       "static/chunks/framework-ecc4130bc7a58a64.js",
       "static/chunks/main-5cae7db0f8cf7943.js",
       "static/chunks/814-00e073fec81ef682.js",
-      "static/css/b85a6481cd18b43e.css",
-      "static/chunks/pages/admin/pedidos-f51209deeba304e0.js"
+      "static/css/fc259dd65b38a49b.css",
+      "static/chunks/pages/admin/pedidos-df44a1b655feade7.js"
     ],
     "/admin/test-pagos": [
       "static/chunks/webpack-448c730e3f3aebe4.js",

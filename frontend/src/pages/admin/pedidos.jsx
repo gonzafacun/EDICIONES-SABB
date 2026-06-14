@@ -1,15 +1,17 @@
 import { useState, useEffect, useCallback } from "react";
 import { withAdminLayout } from "../../components/AdminLayout";
+import { getPedidos, actualizarPedido } from "../../services/pedidos";
 import formatPrice from "../../utils/formatPrice";
 import styles from "./pedidos.module.css";
 
 const ESTADOS = {
   pendiente: { label: "Pendiente", color: styles.estadoPendiente },
-  pendiente_acreditacion: { label: "Pend. acreditación", color: styles.estadoPendiente },
+  adeudada: { label: "Adeudada", color: styles.estadoAdeudada },
   pagado: { label: "Pagado", color: styles.estadoPagado },
   acreditado: { label: "Acreditado", color: styles.estadoAcreditado },
   rechazado: { label: "Rechazado", color: styles.estadoRechazado },
-  devuelto: { label: "Devuelto", color: styles.estadoDevuelto },
+  cancelado: { label: "Cancelado", color: styles.estadoCancelado },
+  reembolsado: { label: "Reembolsado", color: styles.estadoReembolsado },
   enviado: { label: "Enviado", color: styles.estadoEnviado },
   entregado: { label: "Entregado", color: styles.estadoEntregado },
 };
@@ -17,16 +19,16 @@ const ESTADOS = {
 const ESTADOS_SELECT = [
   { value: "", label: "Todos los estados" },
   { value: "pendiente", label: "Pendiente" },
-  { value: "pendiente_acreditacion", label: "Pend. acreditación" },
+  { value: "adeudada", label: "Adeudada" },
   { value: "pagado", label: "Pagado" },
-  { value: "acreditado", label: "Acreditado" },
   { value: "enviado", label: "Enviado" },
   { value: "entregado", label: "Entregado" },
   { value: "rechazado", label: "Rechazado" },
-  { value: "devuelto", label: "Devuelto" },
+  { value: "cancelado", label: "Cancelado" },
+  { value: "reembolsado", label: "Reembolsado" },
 ];
 
-const ESTADOS_UPDATE = ["pendiente", "pagado", "acreditado", "enviado", "entregado", "rechazado", "devuelto"];
+const ESTADOS_UPDATE = ["pendiente", "pagado", "enviado", "entregado", "rechazado", "cancelado", "reembolsado"];
 
 function ModalDetalle({ pedido, onCerrar, onActualizarEstado }) {
   const [actualizando, setActualizando] = useState(false);
@@ -38,8 +40,8 @@ function ModalDetalle({ pedido, onCerrar, onActualizarEstado }) {
     setActualizando(false);
   };
 
-  const creadoEn = pedido.creadoEn?.seconds
-    ? new Date(pedido.creadoEn.seconds * 1000).toLocaleString("es-AR")
+  const creadoEn = pedido.creado_en
+    ? new Date(pedido.creado_en).toLocaleString("es-AR")
     : "—";
 
   return (
@@ -109,7 +111,7 @@ function ModalDetalle({ pedido, onCerrar, onActualizarEstado }) {
             {ESTADOS_UPDATE.filter((e) => e !== pedido.estado).map((estado) => (
               <button
                 key={estado}
-                className={`btn ${estado === "rechazado" || estado === "devuelto" ? styles.btnDanger : "btn-primary"}`}
+                className={`btn ${["rechazado", "cancelado", "reembolsado"].includes(estado) ? styles.btnDanger : "btn-primary"}`}
                 onClick={() => handleEstado(estado)}
                 disabled={actualizando}
               >
@@ -135,21 +137,8 @@ export default function PedidosPage() {
     setCargando(true);
     setError(null);
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL;
-      if (!apiUrl) throw new Error("NEXT_PUBLIC_API_URL no está configurada");
-
-      const adminKey = process.env.NEXT_PUBLIC_ADMIN_API_KEY;
-      if (!adminKey) throw new Error("NEXT_PUBLIC_ADMIN_API_KEY no está configurada");
-
-      const url = filtroEstado
-        ? `${apiUrl}/functions/v1/admin-api/admin/pedidos?estado=${filtroEstado}`
-        : `${apiUrl}/functions/v1/admin-api/admin/pedidos`;
-      const res = await fetch(url, {
-        headers: { Authorization: `Bearer ${adminKey}` },
-      });
-      if (!res.ok) throw new Error(`Error al cargar pedidos: ${res.status}`);
-      const data = await res.json();
-      setPedidos(data.pedidos || []);
+      const data = await getPedidos({ estado: filtroEstado || undefined });
+      setPedidos(data || []);
     } catch (err) {
       setError(err.message);
     } finally {
@@ -163,26 +152,7 @@ export default function PedidosPage() {
 
   const handleActualizarEstado = async (pedidoId, nuevoEstado) => {
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL;
-      if (!apiUrl) throw new Error("NEXT_PUBLIC_API_URL no está configurada");
-
-      const adminKey = process.env.NEXT_PUBLIC_ADMIN_API_KEY;
-      if (!adminKey) throw new Error("NEXT_PUBLIC_ADMIN_API_KEY no está configurada");
-
-      const res = await fetch(`${apiUrl}/functions/v1/admin-api/admin/pedidos/${pedidoId}`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${adminKey}`,
-        },
-        body: JSON.stringify({ estado: nuevoEstado }),
-      });
-
-      if (!res.ok) {
-        const errData = await res.json().catch(() => ({}));
-        throw new Error(errData.error || `Error ${res.status}`);
-      }
-
+      await actualizarPedido(pedidoId, nuevoEstado);
       setModalDetalle(null);
       fetchPedidos();
     } catch (err) {
@@ -202,9 +172,9 @@ export default function PedidosPage() {
 
   const stats = {
     total: pedidos.length,
-    pendientes: pedidos.filter((p) => p.estado === "pendiente" || p.estado === "pendiente_acreditacion").length,
-    pagados: pedidos.filter((p) => p.estado === "pagado" || p.estado === "acreditado").length,
-    rechazados: pedidos.filter((p) => p.estado === "rechazado" || p.estado === "devuelto").length,
+    pendientes: pedidos.filter((p) => p.estado === "pendiente" || p.estado === "adeudada").length,
+    pagados: pedidos.filter((p) => p.estado === "pagado" || p.estado === "acreditado" || p.estado === "enviado" || p.estado === "entregado").length,
+    rechazados: pedidos.filter((p) => p.estado === "rechazado" || p.estado === "cancelado" || p.estado === "reembolsado").length,
   };
 
   if (cargando) {
@@ -302,8 +272,8 @@ export default function PedidosPage() {
             ) : (
               pedidosFiltrados.map((p) => {
                 const estadoInfo = ESTADOS[p.estado] || { label: p.estado, color: "" };
-                const fecha = p.creadoEn?.seconds
-                  ? new Date(p.creadoEn.seconds * 1000).toLocaleDateString("es-AR")
+                const fecha = p.creado_en
+                  ? new Date(p.creado_en).toLocaleDateString("es-AR")
                   : "—";
                 return (
                   <tr key={p.id} className={styles.fila}>
