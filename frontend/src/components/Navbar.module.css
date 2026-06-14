@@ -93,6 +93,72 @@
   gap: var(--space-2);
 }
 
+.cuentaBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border: none;
+  border-radius: var(--radius-md);
+  background: transparent;
+  color: #1d4ed8;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+.cuentaBtn:hover { background: #eff6ff; color: #1e40af; }
+
+.cuentaWrap { position: relative; }
+
+.avatarBtn {
+  width: 38px;
+  height: 38px;
+  border: none;
+  border-radius: var(--radius-full);
+  background: linear-gradient(135deg, #7c3aed, #6d28d9);
+  color: #fff;
+  font-weight: 700;
+  font-size: var(--text-base);
+  cursor: pointer;
+  transition: transform var(--transition-fast);
+}
+.avatarBtn:hover { transform: scale(1.05); }
+
+.cuentaMenu {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  min-width: 200px;
+  padding: var(--space-3);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  z-index: var(--z-dropdown);
+}
+.cuentaEmail {
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
+  word-break: break-all;
+  padding-bottom: var(--space-2);
+  border-bottom: 1px solid var(--color-border);
+}
+.logoutBtn {
+  padding: 0.5rem 0.75rem;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: var(--color-danger-light);
+  color: var(--color-danger);
+  font-weight: 600;
+  font-size: var(--text-sm);
+  cursor: pointer;
+  text-align: left;
+}
+.logoutBtn:hover { background: #fee2e2; }
+
 .cartBtn {
   position: relative;
   display: flex;

@@ -1,6 +1,7 @@
 // supabase/functions/crear-pago/index.ts
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts'
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+import { crypto } from 'https://deno.land/std@0.224.0/crypto/mod.ts'
 
 const FRONTEND_URL = Deno.env.get('FRONTEND_URL') ?? 'https://ediciones-sab.web.app'
 
@@ -69,7 +70,7 @@ serve(async (req) => {
     const importe = total.toFixed(2)
     const hashInput = `${idOrganismo}${nroOperacion}${importe}${hash}`
     
-    // MD5 hash (usando Web Crypto API)
+    // MD5 hash (usando std/crypto de Deno — el Web Crypto API nativo no soporta MD5)
     const encoder = new TextEncoder()
     const data = encoder.encode(hashInput)
     const hashBuffer = await crypto.subtle.digest('MD5', data)

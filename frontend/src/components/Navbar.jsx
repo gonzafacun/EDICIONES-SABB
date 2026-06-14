@@ -2,7 +2,50 @@ import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useCart } from "../context/CartContext";
+import { useAuth } from "../context/AuthContext";
+import AuthModal from "./AuthModal";
 import styles from "./Navbar.module.css";
+
+function CuentaBtn({ usuario, onAbrir, onLogout }) {
+  const [abierto, setAbierto] = useState(false);
+  const ref = useRef(null);
+
+  useEffect(() => {
+    if (!abierto) return;
+    const h = (e) => ref.current && !ref.current.contains(e.target) && setAbierto(false);
+    document.addEventListener("mousedown", h);
+    return () => document.removeEventListener("mousedown", h);
+  }, [abierto]);
+
+  if (!usuario) {
+    return (
+      <button className={styles.cuentaBtn} onClick={onAbrir} aria-label="Iniciar sesión">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+          <circle cx="12" cy="8" r="4" />
+          <path d="M4 21c0-4 4-6 8-6s8 2 8 6" />
+        </svg>
+      </button>
+    );
+  }
+
+  const inicial = (usuario.user_metadata?.nombre || usuario.email || "?")[0].toUpperCase();
+
+  return (
+    <div className={styles.cuentaWrap} ref={ref}>
+      <button className={styles.avatarBtn} onClick={() => setAbierto((v) => !v)} aria-label="Mi cuenta">
+        {inicial}
+      </button>
+      {abierto && (
+        <div className={styles.cuentaMenu}>
+          <span className={styles.cuentaEmail}>{usuario.email}</span>
+          <button className={styles.logoutBtn} onClick={() => { setAbierto(false); onLogout(); }}>
+            Cerrar sesión
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
 
 function CartIcon({ count = 0 }) {
   return (
@@ -82,7 +125,9 @@ function BrandMark({ compact = false }) {
 
 export default function Navbar() {
   const { totalItems } = useCart();
+  const { usuario, logout } = useAuth();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [authOpen, setAuthOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const router = useRouter();
   const menuRef = useRef(null);
@@ -153,6 +198,11 @@ export default function Navbar() {
           </nav>
 
           <div className={styles.actions}>
+            <CuentaBtn
+              usuario={usuario}
+              onAbrir={() => setAuthOpen(true)}
+              onLogout={logout}
+            />
             <CartIcon count={totalItems} />
           </div>
         </div>
@@ -217,6 +267,8 @@ export default function Navbar() {
           </Link>
         </div>
       </nav>
+
+      <AuthModal abierto={authOpen} onClose={() => setAuthOpen(false)} />
     </>
   );
 }

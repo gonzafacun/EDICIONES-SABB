@@ -34,13 +34,41 @@ export function AuthProvider({ children }) {
     return data;
   };
 
+  // Registro de un cliente nuevo con email + contraseña
+  const registro = async (email, password, nombre = "") => {
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        data: { nombre },
+        emailRedirectTo: typeof window !== "undefined" ? window.location.origin : undefined,
+      },
+    });
+    if (error) throw error;
+    return data;
+  };
+
+  // Login con proveedor OAuth (google | apple)
+  const loginConProveedor = async (provider) => {
+    const { data, error } = await supabase.auth.signInWithOAuth({
+      provider,
+      options: {
+        redirectTo: typeof window !== "undefined" ? window.location.origin : undefined,
+      },
+    });
+    if (error) throw error;
+    return data;
+  };
+
   const logout = async () => {
     const { error } = await supabase.auth.signOut();
     if (error) throw error;
   };
 
   return (
-    <AuthContext.Provider value={{ usuario, cargando, login, logout }}>
+    <AuthContext.Provider
+      value={{ usuario, cargando, login, registro, loginConProveedor, logout }}
+    >
       {children}
     </AuthContext.Provider>
   );
