@@ -7,18 +7,22 @@ import { getProducto } from "../../services/productos";
 import formatPrice from "../../utils/formatPrice";
 import styles from "./[id].module.css";
 
-function Galeria({ nombre }) {
+function Galeria({ nombre, imagen }) {
   return (
     <div className={styles.galeria}>
       <div className={styles.imagenPrincipal}>
-        <div className={styles.imagenPlaceholder}>
-          <svg width="80" height="80" viewBox="0 0 24 24" fill="none"
-            stroke="currentColor" strokeWidth="1" strokeLinecap="round">
-            <rect x="3" y="3" width="18" height="18" rx="2" />
-            <circle cx="8.5" cy="8.5" r="1.5" />
-            <path d="m21 15-5-5L5 21" />
-          </svg>
-        </div>
+        {imagen ? (
+          <img src={imagen} alt={nombre} className={styles.imagenReal} />
+        ) : (
+          <div className={styles.imagenPlaceholder}>
+            <svg width="80" height="80" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" strokeWidth="1" strokeLinecap="round">
+              <rect x="3" y="3" width="18" height="18" rx="2" />
+              <circle cx="8.5" cy="8.5" r="1.5" />
+              <path d="m21 15-5-5L5 21" />
+            </svg>
+          </div>
+        )}
       </div>
     </div>
   );
@@ -116,7 +120,7 @@ export default function ProductoDetallePage() {
 
         <div className={styles.layout}>
 
-          <Galeria nombre={producto.nombre} />
+          <Galeria nombre={producto.nombre} imagen={producto.imagen} />
 
           <div className={styles.info}>
             {producto.categoria && (

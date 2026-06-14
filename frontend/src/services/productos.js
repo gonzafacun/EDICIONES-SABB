@@ -93,6 +93,7 @@ export async function crearProducto(datos) {
       precio: Number(datos.precio),
       categoria: datos.categoria,
       stock: Number(datos.stock) || 0,
+      imagen: datos.imagen || null,
       creado_en: new Date().toISOString(),
       actualizado_en: new Date().toISOString(),
     }])
@@ -115,6 +116,7 @@ export async function actualizarProducto(id, datos) {
   if (datos.precio !== undefined) updates.precio = Number(datos.precio);
   if (datos.categoria !== undefined) updates.categoria = datos.categoria;
   if (datos.stock !== undefined) updates.stock = Number(datos.stock);
+  if (datos.imagen !== undefined) updates.imagen = datos.imagen || null;
 
   const { error } = await supabase
     .from(TABLE)

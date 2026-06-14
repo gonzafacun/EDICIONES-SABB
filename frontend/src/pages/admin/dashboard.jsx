@@ -26,6 +26,7 @@ const CATEGORIAS = [
 const PRODUCTO_VACIO = {
   nombre: "", precio: "",
   categoria: "", stock: "",
+  imagen: "",
 };
 
 function ModalProducto({ producto, onGuardar, onCerrar }) {
@@ -109,7 +110,15 @@ function ModalProducto({ producto, onGuardar, onCerrar }) {
               {errores.precio && <span className={styles.errorMsg}>{errores.precio}</span>}
             </div>
 
-
+            <div className={`${styles.formGrupo} ${styles.fullWidth}`}>
+              <label className={styles.formLabel}>URL de la imagen</label>
+              <input className={styles.formInput}
+                type="url" placeholder="https://..."
+                value={form.imagen || ""} onChange={(e) => set("imagen", e.target.value)} />
+              {form.imagen && (
+                <img src={form.imagen} alt="Vista previa" style={{ marginTop: 8, maxHeight: 120, borderRadius: 8, objectFit: "contain" }} />
+              )}
+            </div>
 
           </div>
         </div>

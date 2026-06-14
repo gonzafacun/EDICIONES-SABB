@@ -11,11 +11,6 @@ const nextConfig = {
     ],
   },
 
-  // Variables de entorno públicas (accesibles en el browser)
-  env: {
-    NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
-  },
-
   // Trailing slash para compatibilidad con Firebase Hosting
   trailingSlash: true,
 };

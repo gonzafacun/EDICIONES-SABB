@@ -29,17 +29,16 @@ export default function AdminLoginPage() {
       await login(email, password);
       router.push("/admin/dashboard");
     } catch (err) {
-      switch (err.code) {
-        case "auth/user-not-found":
-        case "auth/wrong-password":
-        case "auth/invalid-credential":
-          setError("Email o contraseña incorrectos.");
-          break;
-        case "auth/too-many-requests":
-          setError("Demasiados intentos. Esperá unos minutos.");
-          break;
-        default:
-          setError("Error al iniciar sesión. Intentá de nuevo.");
+      // Supabase Auth devuelve mensajes de texto (no códigos como Firebase)
+      const msg = err?.message || "";
+      if (msg.includes("Invalid login credentials")) {
+        setError("Email o contraseña incorrectos.");
+      } else if (msg.includes("Email not confirmed")) {
+        setError("Confirmá tu email antes de ingresar.");
+      } else if (msg.toLowerCase().includes("too many") || msg.toLowerCase().includes("rate limit")) {
+        setError("Demasiados intentos. Esperá unos minutos.");
+      } else {
+        setError("Error al iniciar sesión. Intentá de nuevo.");
       }
     } finally {
       setLoading(false);

@@ -116,7 +116,7 @@ serve(async (req) => {
       numero_operacion: pedido.nro_operacion,
       id_moneda_operacion: '1',
       monto_operacion: montoNum.toFixed(2),
-      ok_url: `${origin}/pago-exitoso?id=${pedido.id}`,
+      ok_url: `${origin}/pago-exitoso?id=${pedido.id}&total=${montoNum}`,
       error_url: `${origin}/pago-error?id=${pedido.id}`,
     }
 

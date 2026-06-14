@@ -142,7 +142,7 @@ export default function ProductosPage() {
     soloConStock: false,
   });
   const [busqueda, setBusqueda] = useState("");
-  const [orden, setOrden] = useState("destacado");
+  const [orden, setOrden] = useState("nuevos");
   const [menuFiltros, setMenuFiltros] = useState(false);
   const [viewMode, setViewMode] = useState("grid"); // "grid" o "list"
 
