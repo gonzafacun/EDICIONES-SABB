@@ -3,6 +3,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useCart } from "../context/CartContext";
 import { withLayout } from "../components/Layout";
+import { iniciarPago } from "../services/epagos";
 import formatPrice from "../utils/formatPrice";
 import styles from "./checkout.module.css";
 
@@ -243,7 +244,7 @@ export default function CheckoutPage() {
     setCargando(true);
 
     try {
-      const pedido = {
+      await iniciarPago({
         items: items.map((i) => ({
           id: i.id,
           nombre: i.nombre,
@@ -252,52 +253,11 @@ export default function CheckoutPage() {
         })),
         comprador: datos,
         total: subtotal,
-      };
-
-      const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-      const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-      if (!supabaseUrl || !supabaseAnonKey) {
-        throw new Error("No se configuró NEXT_PUBLIC_SUPABASE_URL / ANON_KEY");
-      }
-
-      const res = await fetch(`${supabaseUrl}/functions/v1/crear-pago`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${supabaseAnonKey}`,
-          apikey: supabaseAnonKey,
-        },
-        body: JSON.stringify(pedido),
       });
-
-      if (!res.ok) {
-        const errorData = await res.json().catch(() => ({}));
-        throw new Error(errorData.error || `Error del servidor: ${res.status} ${res.statusText}`);
-      }
-
-      const data = await res.json();
-
-      if (data.postUrl && data.campos) {
-        // E-pagos requiere un POST de formulario para abrir el checkout
-        const form = document.createElement("form");
-        form.method = "POST";
-        form.action = data.postUrl;
-        Object.entries(data.campos).forEach(([name, value]) => {
-          const input = document.createElement("input");
-          input.type = "hidden";
-          input.name = name;
-          input.value = value;
-          form.appendChild(input);
-        });
-        document.body.appendChild(form);
-        form.submit();
-      } else {
-        throw new Error(data.error || "No se recibió la información de pago");
-      }
+      // iniciarPago redirige a E-pagos; no hace falta nada más acá
     } catch (err) {
       console.error("Error al crear pago:", err);
       alert("Hubo un error al procesar el pago. Intentá de nuevo.");
-    } finally {
       setCargando(false);
     }
   };

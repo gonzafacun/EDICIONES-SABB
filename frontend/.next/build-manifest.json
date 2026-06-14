@@ -5,8 +5,8 @@
   "devFiles": [],
   "ampDevFiles": [],
   "lowPriorityFiles": [
-    "static/WKpahxti3YL0j8B3qvk3X/_buildManifest.js",
-    "static/WKpahxti3YL0j8B3qvk3X/_ssgManifest.js"
+    "static/PV-fg7sa0c_1lQl6kEUKj/_buildManifest.js",
+    "static/PV-fg7sa0c_1lQl6kEUKj/_ssgManifest.js"
   ],
   "rootMainFiles": [],
   "pages": {
@@ -39,7 +39,7 @@
       "static/chunks/main-5cae7db0f8cf7943.js",
       "static/chunks/814-00e073fec81ef682.js",
       "static/css/97c232cd15a1b4b6.css",
-      "static/chunks/pages/admin/dashboard-d8b08911e0b018de.js"
+      "static/chunks/pages/admin/dashboard-d62ced4f3b6d9a0e.js"
     ],
     "/admin/login": [
       "static/chunks/webpack-448c730e3f3aebe4.js",
@@ -54,7 +54,15 @@
       "static/chunks/main-5cae7db0f8cf7943.js",
       "static/chunks/814-00e073fec81ef682.js",
       "static/css/b85a6481cd18b43e.css",
-      "static/chunks/pages/admin/pedidos-be6d43aa948bcec6.js"
+      "static/chunks/pages/admin/pedidos-f51209deeba304e0.js"
+    ],
+    "/admin/test-pagos": [
+      "static/chunks/webpack-448c730e3f3aebe4.js",
+      "static/chunks/framework-ecc4130bc7a58a64.js",
+      "static/chunks/main-5cae7db0f8cf7943.js",
+      "static/chunks/814-00e073fec81ef682.js",
+      "static/css/d9abc248aad11d65.css",
+      "static/chunks/pages/admin/test-pagos-06c68111a162c742.js"
     ],
     "/checkout": [
       "static/chunks/webpack-448c730e3f3aebe4.js",
@@ -63,7 +71,7 @@
       "static/chunks/814-00e073fec81ef682.js",
       "static/chunks/404-a4950cdc4647f70f.js",
       "static/css/bd423c7424d7d5df.css",
-      "static/chunks/pages/checkout-81c6923d98deac91.js"
+      "static/chunks/pages/checkout-25511ceb2fb34ca6.js"
     ],
     "/pago-error": [
       "static/chunks/webpack-448c730e3f3aebe4.js",

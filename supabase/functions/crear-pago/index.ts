@@ -36,7 +36,24 @@ serve(async (req) => {
       authHeader ? { global: { headers: { Authorization: authHeader } } } : {}
     )
 
-    const { items, comprador, total } = await req.json()
+    const {
+      items,
+      comprador,
+      total,
+      // Campos opcionales (plan de pruebas / certificación E-pagos)
+      identificador_externo_2,
+      identificador_externo_3,
+      opc_fecha_vencimiento,
+    } = await req.json()
+
+    // Validaciones básicas
+    if (!Array.isArray(items) || items.length === 0) {
+      throw new Error('El pedido no tiene items')
+    }
+    const montoNum = Number(total)
+    if (!Number.isFinite(montoNum) || montoNum <= 0) {
+      throw new Error('El monto del pedido es inválido')
+    }
 
     // 1. Crear el pedido en Supabase
     const { data: pedido, error: errorPedido } = await supabaseClient
@@ -90,23 +107,30 @@ serve(async (req) => {
     }
 
     // 4. Devolver los campos para el POST del formulario al checkout de E-pagos
+    const campos: Record<string, string> = {
+      version: '2.0',
+      operacion: 'op_pago',
+      id_organismo: idOrganismo,
+      convenio,
+      token: tokenData.token,
+      numero_operacion: pedido.nro_operacion,
+      id_moneda_operacion: '1',
+      monto_operacion: montoNum.toFixed(2),
+      ok_url: `${origin}/pago-exitoso?id=${pedido.id}`,
+      error_url: `${origin}/pago-error?id=${pedido.id}`,
+    }
+
+    // Campos opcionales solo si vienen (plan de pruebas de certificación)
+    if (identificador_externo_2) campos.identificador_externo_2 = String(identificador_externo_2)
+    if (identificador_externo_3) campos.identificador_externo_3 = String(identificador_externo_3)
+    if (opc_fecha_vencimiento) campos.opc_fecha_vencimiento = String(opc_fecha_vencimiento)
+
     return new Response(
       JSON.stringify({
         success: true,
         pedidoId: pedido.id,
         postUrl,
-        campos: {
-          version: '2.0',
-          operacion: 'op_pago',
-          id_organismo: idOrganismo,
-          convenio,
-          token: tokenData.token,
-          numero_operacion: pedido.nro_operacion,
-          id_moneda_operacion: '1',
-          monto_operacion: Number(total).toFixed(2),
-          ok_url: `${origin}/pago-exitoso?id=${pedido.id}`,
-          error_url: `${origin}/pago-error?id=${pedido.id}`,
-        },
+        campos,
       }),
       {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },

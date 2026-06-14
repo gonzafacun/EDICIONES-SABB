@@ -47,33 +47,37 @@ serve(async (req) => {
     }
 
     // Determinar el nuevo estado
-    // id_resp 02001 = pago acreditado; tipo D = reembolso
-    let nuevoEstado: string
+    // id_resp 02001 = pago acreditado; tipo D = reembolso.
+    // Si llega otra cosa, NO degradamos el pedido (solo confirmamos recepción).
+    let nuevoEstado: string | null
     if (tipo === 'D') {
       nuevoEstado = 'reembolsado'
     } else if (idResp === '02001') {
       nuevoEstado = 'pagado'
     } else {
-      nuevoEstado = 'pendiente'
+      nuevoEstado = null
     }
 
     // 1. Buscar como pedido
     const { data: pedido } = await supabaseClient
       .from('pedidos')
-      .select('id')
+      .select('id, estado')
       .eq('nro_operacion', numeroOperacion)
       .single()
 
     if (pedido) {
-      const { error } = await supabaseClient
-        .from('pedidos')
-        .update({ estado: nuevoEstado, actualizado_en: new Date().toISOString() })
-        .eq('nro_operacion', numeroOperacion)
+      // Idempotencia: no tocar si ya está en ese estado o si no hay cambio que aplicar
+      if (nuevoEstado && pedido.estado !== nuevoEstado) {
+        const { error } = await supabaseClient
+          .from('pedidos')
+          .update({ estado: nuevoEstado, actualizado_en: new Date().toISOString() })
+          .eq('nro_operacion', numeroOperacion)
 
-      if (error) throw error
+        if (error) throw error
+      }
 
       return new Response(
-        JSON.stringify({ success: true, tipo: 'pedido', estado: nuevoEstado }),
+        JSON.stringify({ success: true, tipo: 'pedido', estado: nuevoEstado ?? pedido.estado }),
         { headers: { 'Content-Type': 'application/json' }, status: 200 }
       )
     }

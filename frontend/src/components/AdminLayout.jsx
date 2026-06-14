@@ -8,8 +8,9 @@ import { useAuth } from "../context/AuthContext";
 import styles from "./AdminLayout.module.css";
 
 const NAV_ITEMS = [
-  { href: "/admin/dashboard", label: "Productos",  icon: "📦" },
-  { href: "/admin/pedidos",   label: "Pedidos",    icon: "🛒" },
+  { href: "/admin/dashboard",  label: "Productos",     icon: "📦" },
+  { href: "/admin/pedidos",    label: "Pedidos",       icon: "🛒" },
+  { href: "/admin/test-pagos", label: "Pruebas E-pagos", icon: "🧪" },
 ];
 
 function AdminSidebar({ onLogout }) {
