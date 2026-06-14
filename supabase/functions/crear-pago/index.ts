@@ -61,9 +61,9 @@ serve(async (req) => {
     const hash = Deno.env.get('EPAGOS_HASH')
     const modo = Deno.env.get('EPAGOS_MODO') || 'sandbox'
     
-    const baseUrl = modo === 'sandbox' 
-      ? 'https://sandbox.e-pagos.com.ar' 
-      : 'https://www.e-pagos.com.ar'
+    const baseUrl = modo === 'sandbox'
+      ? 'https://sandbox.epagos.com'
+      : 'https://www.epagos.com'
 
     // 3. Generar hash para E-pagos
     const nroOperacion = pedido.nro_operacion
