@@ -5,8 +5,8 @@
   "devFiles": [],
   "ampDevFiles": [],
   "lowPriorityFiles": [
-    "static/c7xDFjEoLeuoF4lFSfSFw/_buildManifest.js",
-    "static/c7xDFjEoLeuoF4lFSfSFw/_ssgManifest.js"
+    "static/RZl7C2qqRMAk2pWFFOYcx/_buildManifest.js",
+    "static/RZl7C2qqRMAk2pWFFOYcx/_ssgManifest.js"
   ],
   "rootMainFiles": [],
   "pages": {
@@ -63,7 +63,7 @@
       "static/chunks/814-00e073fec81ef682.js",
       "static/chunks/404-62fac3a02d4a0860.js",
       "static/css/bd423c7424d7d5df.css",
-      "static/chunks/pages/checkout-62e37537bc29c870.js"
+      "static/chunks/pages/checkout-7412c38f71128629.js"
     ],
     "/pago-error": [
       "static/chunks/webpack-448c730e3f3aebe4.js",
