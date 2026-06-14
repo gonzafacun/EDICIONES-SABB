@@ -2,30 +2,10 @@ import { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
 import styles from "./AuthModal.module.css";
 
-// Iconos ───────────────────────────────────────────────
-function GoogleIcon() {
-  return (
-    <svg width="20" height="20" viewBox="0 0 48 48" aria-hidden="true">
-      <path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.4 29.2 35 24 35c-6.1 0-11-4.9-11-11s4.9-11 11-11c2.8 0 5.4 1.1 7.3 2.9l5.7-5.7C33.6 6.1 29 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.3-.4-3.5z" />
-      <path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 16 19 13 24 13c2.8 0 5.4 1.1 7.3 2.9l5.7-5.7C33.6 6.1 29 4 24 4 16.3 4 9.7 8.3 6.3 14.7z" />
-      <path fill="#4CAF50" d="M24 44c5.1 0 9.7-1.9 13.2-5.1l-6.1-5.2C29.1 35.1 26.7 36 24 36c-5.2 0-9.6-3.6-11.2-8.4l-6.5 5C9.6 39.6 16.2 44 24 44z" />
-      <path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.2-2.2 4.1-4.1 5.5l6.1 5.2C39.9 36.6 44 31 44 24c0-1.3-.1-2.3-.4-3.5z" />
-    </svg>
-  );
-}
-
-function AppleIcon() {
-  return (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-      <path d="M16.4 12.9c0-2.6 2.1-3.8 2.2-3.9-1.2-1.8-3.1-2-3.8-2-1.6-.2-3.1.9-3.9.9-.8 0-2-.9-3.3-.9-1.7 0-3.3 1-4.2 2.5-1.8 3.1-.5 7.7 1.3 10.2.9 1.2 1.9 2.6 3.2 2.5 1.3-.1 1.8-.8 3.3-.8s2 .8 3.3.8c1.4 0 2.3-1.2 3.1-2.5.6-.9.9-1.4 1.4-2.4-3.7-1.4-2.9-5.9-.9-7.9zM13.9 4.6c.7-.8 1.1-2 1-3.1-1 0-2.2.7-2.9 1.5-.6.7-1.2 1.9-1 3 1.1.1 2.2-.6 2.9-1.4z" />
-    </svg>
-  );
-}
-
 const VISTA = { BIENVENIDA: "bienvenida", LOGIN: "login", REGISTRO: "registro" };
 
 export default function AuthModal({ abierto, onClose }) {
-  const { login, registro, loginConProveedor } = useAuth();
+  const { login, registro } = useAuth();
   const [vista, setVista] = useState(VISTA.BIENVENIDA);
   const [form, setForm] = useState({ nombre: "", email: "", password: "" });
   const [error, setError] = useState("");
@@ -106,16 +86,6 @@ export default function AuthModal({ abierto, onClose }) {
     }
   };
 
-  const handleProveedor = async (provider) => {
-    setError("");
-    try {
-      await loginConProveedor(provider);
-      // signInWithOAuth redirige fuera del sitio; no cerramos manualmente
-    } catch (err) {
-      setError(traducirError(err));
-    }
-  };
-
   const enRegistro = vista === VISTA.REGISTRO;
   const enLogin = vista === VISTA.LOGIN;
 
@@ -174,18 +144,6 @@ export default function AuthModal({ abierto, onClose }) {
               </button>
 
               <div className={styles.separador}><span>o</span></div>
-
-              <div className={styles.proveedores}>
-                <button className={styles.btnProveedor} onClick={() => handleProveedor("google")}>
-                  <GoogleIcon />
-                </button>
-                <button
-                  className={`${styles.btnProveedor} ${styles.btnApple}`}
-                  onClick={() => handleProveedor("apple")}
-                >
-                  <AppleIcon />
-                </button>
-              </div>
 
               <button className={styles.btnOutline} onClick={() => setVista(VISTA.REGISTRO)}>
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
