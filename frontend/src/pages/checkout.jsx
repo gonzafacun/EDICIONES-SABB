@@ -277,10 +277,22 @@ export default function CheckoutPage() {
 
       const data = await res.json();
 
-      if (data.urlPago) {
-        window.location.href = data.urlPago;
+      if (data.postUrl && data.campos) {
+        // E-pagos requiere un POST de formulario para abrir el checkout
+        const form = document.createElement("form");
+        form.method = "POST";
+        form.action = data.postUrl;
+        Object.entries(data.campos).forEach(([name, value]) => {
+          const input = document.createElement("input");
+          input.type = "hidden";
+          input.name = name;
+          input.value = value;
+          form.appendChild(input);
+        });
+        document.body.appendChild(form);
+        form.submit();
       } else {
-        throw new Error(data.error || "No se recibió URL de pago");
+        throw new Error(data.error || "No se recibió la información de pago");
       }
     } catch (err) {
       console.error("Error al crear pago:", err);
