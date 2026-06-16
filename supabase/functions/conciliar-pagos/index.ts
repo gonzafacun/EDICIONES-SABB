@@ -170,6 +170,42 @@ serve(async (req) => {
       pagina++
     } while (pagina <= totalPaginas)
 
+    // 2b) obtener_pagos_adicionales (SOAP) — pagos extra sobre operaciones ya acreditadas (prueba 21002).
+    //     No cambian el estado del pedido (ya está pagado); se listan para registro/control.
+    const adicionales: Array<Record<string, string | null>> = []
+    let adicionalesError: string | null = null
+    try {
+      const credAd =
+        `<credenciales xsi:type="ns1:DatosCredencialesPago">` +
+        `<id_organismo xsi:type="xsd:int">${xmlEscape(idOrganismo)}</id_organismo>` +
+        `<token xsi:type="xsd:string">${xmlEscape(token)}</token>` +
+        `</credenciales>`
+      const datosAd =
+        `<pagos xsi:type="ns1:DatosPagosAdicionales">` +
+        `<Fecha_desde xsi:type="xsd:date">${fechaDesde}</Fecha_desde>` +
+        `<Fecha_hasta xsi:type="xsd:date">${fechaHasta}</Fecha_hasta>` +
+        `</pagos>`
+      const adXml = `<version xsi:type="xsd:string">${VERSION}</version>${credAd}${datosAd}`
+      const adResp = await soapCall(modo, 'obtener_pagos_adicionales', adXml)
+      const adIdResp = tag(adResp, 'id_resp')
+      if (adIdResp !== '07001') {
+        adicionalesError = `obtener_pagos_adicionales (${adIdResp}): ${tag(adResp, 'respuesta') ?? ''}`
+      } else {
+        for (const it of items(adResp)) {
+          adicionales.push({
+            cut: tag(it, 'CodigoUnicoTransaccion'),
+            forma_pago: tag(it, 'FormaPago'),
+            monto: tag(it, 'Monto'),
+            fecha_pago: tag(it, 'FechaPago'),
+            fecha_novedad: tag(it, 'FechaNovedad'),
+            id_pago: tag(it, 'IdPago'),
+          })
+        }
+      }
+    } catch (e) {
+      adicionalesError = (e as Error).message
+    }
+
     // 3) Conciliar: marcar pedidos según estado
     let actualizados = 0
     for (const pago of resultados) {
@@ -201,6 +237,8 @@ serve(async (req) => {
         rango: { fechaDesde, fechaHasta },
         encontrados: resultados.length,
         actualizados,
+        adicionales: adicionales.length,
+        adicionalesError,
       }),
       { headers: { 'Content-Type': 'application/json' }, status: 200 }
     )
